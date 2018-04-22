@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpFilePath
+namespace SharpFilePath.Interfaces
 {
     public interface IFile : IPath
     {

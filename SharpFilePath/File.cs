@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SharpFilePath.CopyFileEx;
+using SharpFilePath.Interfaces;
 
 namespace SharpFilePath
 {
@@ -39,25 +40,10 @@ namespace SharpFilePath
 		    new FileEx(progress).Copy(Value, target.ToString(), ref prog);
 	    }
 
-	    public string SubpathFrom(IPath path)
-		{
-			return Value.Substring(path.ToString().Length).TrimEnd('/', '\\');
-		}
-
-		public override void Remove()
+	    public override void Remove()
 		{
 			System.IO.File.Delete(Value);
 		}
-
-	    public override void Backup(Path where, Action<long, long, long> progress)
-	    {
-		    Copy(where, progress);
-	    }
-
-	    public override void Restore(Path from, Action<long, long, long> progress)
-	    {
-		    from.Copy(this, progress);
-	    }
 
 	    public override bool Exists => System.IO.File.Exists(Value);
 

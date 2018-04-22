@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SharpFilePath
+namespace SharpFilePath.Interfaces
 {
     public interface IFolder : IPath
     {

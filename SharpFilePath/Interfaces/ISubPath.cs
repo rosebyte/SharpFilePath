@@ -1,4 +1,4 @@
-﻿namespace SharpFilePath
+﻿namespace SharpFilePath.Interfaces
 {
     public interface ISubPath<out T>
     {

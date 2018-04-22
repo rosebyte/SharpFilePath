@@ -1,4 +1,6 @@
-﻿namespace SharpFilePath
+﻿using SharpFilePath;
+
+namespace System
 {
     public static class StringExtensions
     {

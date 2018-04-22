@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpFilePath.Interfaces;
 
 namespace SharpFilePath
 {
@@ -17,28 +18,18 @@ namespace SharpFilePath
 			return Value;
 		}
 		
-		public static implicit operator Path(string input)
-		{
-			return input.ToPath();
-		}
-
+		public static implicit operator string(Path input) => input.ToString();
+		
 		public static Path FromString(string path)
 		{
-			var attributes = System.IO.File.GetAttributes(path);
-
-			if (attributes.HasFlag(FileAttributes.Device) || path.EndsWith(":\\") || path.EndsWith(":"))
-			{
-				return new Drive(path);
-			}
-			
-			if (attributes.HasFlag(FileAttributes.Directory))
-			{
-				return new Folder(path);
-			}
-
 			if (System.IO.File.Exists(path))
 			{
 				return new File(path);
+			}
+
+			if (Directory.Exists(path))
+			{
+				return new Folder(path);
 			}
 			
 			return new EmptyPath(path);
@@ -54,7 +45,15 @@ namespace SharpFilePath
 		public static bool operator >=(Path left, Path right) => left > right || left == right;
 
 		public override bool Equals(object obj) => Equals(obj as Path);
-		private bool Equals(Path other) => Value == other;
+		private bool Equals(Path other)
+		{
+			if (ReferenceEquals(other, null))
+			{
+				return false;
+			}
+
+			return ReferenceEquals(Value, other.ToString());
+		}
 
 		public Path Combine(string pathPart) => System.IO.Path.Combine(Value, pathPart).ToPath();
 		
@@ -69,12 +68,12 @@ namespace SharpFilePath
 			
 			if (Value.StartsWith(".\\") || Value.StartsWith("./"))
 			{
-				return pwd.Combine(Value.Substring(1));
+				return pwd.Combine(Value.Substring(2));
 			}
 
 			if (Value.StartsWith("..\\") || Value.StartsWith("../"))
 			{
-				return pwd.ParentDirectory.Combine(Value.Substring(2));
+				return pwd.ParentDirectory.Combine(Value.Substring(3));
 			}
 
 			return this;
@@ -83,8 +82,6 @@ namespace SharpFilePath
 		
 		public abstract bool Exists { get; }
 		public abstract void Remove();
-		public abstract void Backup(Path where, Action<long, long, long> progress);
-		public abstract void Restore(Path from, Action<long, long, long> progress);
 		public abstract void Copy(Path target, Action<long, long, long> progress);
 	}
 }

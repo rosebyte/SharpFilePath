@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SharpFilePath.Interfaces;
 
 namespace SharpFilePath
 {
@@ -14,16 +15,6 @@ namespace SharpFilePath
         public override void Remove()
         {
             Directory.Delete(Value, true);
-        }
-
-        public override void Backup(Path where, Action<long, long, long> progress)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Restore(Path from, Action<long, long, long> progress)
-        {
-            throw new NotImplementedException();
         }
 
         public override void Copy(Path target, Action<long, long, long> progress)
@@ -103,6 +94,11 @@ namespace SharpFilePath
             if (Exists)
             {
                 return;
+            }
+
+            if (ParentDirectory == null)
+            {
+                throw new Exception("Top level node (e.g. drive) can't be created.");
             }
             
             if (!ParentDirectory.Exists)

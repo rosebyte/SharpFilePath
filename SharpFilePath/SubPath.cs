@@ -1,4 +1,6 @@
-﻿namespace SharpFilePath
+﻿using SharpFilePath.Interfaces;
+
+namespace SharpFilePath
 {
     public class SubPath<T> : ISubPath<T>
     {
