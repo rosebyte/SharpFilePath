@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SharpFilePath
 {
-    public class Folder : SharpPath, IFolder
+    public class Folder : Path, IFolder
     {
         public Folder(string value) : base(value) { }
         
@@ -16,25 +16,30 @@ namespace SharpFilePath
             Directory.Delete(Value, true);
         }
 
-        public override void Backup(SharpPath where, Action<int> progress)
+        public override void Backup(Path where, Action<long, long, long> progress)
         {
             throw new NotImplementedException();
         }
 
-        public override void Restore(SharpPath from, Action<int> progress)
+        public override void Restore(Path from, Action<long, long, long> progress)
         {
             throw new NotImplementedException();
         }
 
-        public override void Copy(SharpPath target, Action<int> progress)
+        public override void Copy(Path target, Action<long, long, long> progress)
         {
+            if (!(target is IFolder dest))
+            {
+                throw new Exception("Folder can be copied only to folder.");
+            }
             
-            
+            NewerFilesThan(dest).ToList().ForEach(x => x.Child.Copy(dest.Combine(x.Value), progress));
         }
 
-        public void Mirror(IPath target)
+        public void Mirror(IFolder target, Action<long, long, long> progress)
         {
-            throw new NotImplementedException();
+            SyncStructure(target);
+            NewerFilesThan(target).ToList().ForEach(x => x.Child.Copy(target.Combine(x.Value), progress));
         }
 
         public void SyncStructure(IFolder destination)

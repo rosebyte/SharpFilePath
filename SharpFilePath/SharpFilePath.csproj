@@ -45,7 +45,7 @@
     <Compile Include="Drive.cs" />
     <Compile Include="EmptyPath.cs" />
     <Compile Include="File.cs" />
-    <Compile Include="SharpPath.cs" />
+    <Compile Include="Path.cs" />
     <Compile Include="Folder.cs" />
     <Compile Include="IFile.cs" />
     <Compile Include="IPath.cs" />

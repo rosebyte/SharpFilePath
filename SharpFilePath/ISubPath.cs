@@ -1,7 +1,9 @@
 ﻿namespace SharpFilePath
 {
-    public interface ISubPath : IPath
+    public interface ISubPath<out T>
     {
-        string Subpath { get; }
+        string Value { get; }
+        Folder Parent { get; }
+        T Child { get; }
     }
 }

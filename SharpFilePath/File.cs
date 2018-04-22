@@ -6,10 +6,10 @@ using SharpFilePath.CopyFileEx;
 
 namespace SharpFilePath
 {
-    public class File : SharpPath, IFile
+    public class File : Path, IFile
     {
-	    public string Name => Path.GetFileName(Value);
-	    public string NameWithoutExtension => Path.GetFileNameWithoutExtension(Value);
+	    public string Name => System.IO.Path.GetFileName(Value);
+	    public string NameWithoutExtension => System.IO.Path.GetFileNameWithoutExtension(Value);
 	    
 	    private string _content;
 		public string Content => _content ?? (_content = System.IO.File.ReadAllText(Value));
@@ -25,18 +25,18 @@ namespace SharpFilePath
 		    _fileInfo = new Lazy<FileInfo>(() => new FileInfo(value));
 	    }
 
-	    public override void Copy(SharpPath target, Action<long, long> progress)
+	    public override void Copy(Path target, Action<long, long, long> progress)
 	    {
 		    if (Size < 1000)
 		    {
 			    System.IO.File.Copy(Value, target.ToString(), true);
-			    progress?.Invoke(Size, Size);
+			    progress?.Invoke(Size, Size, Size);
 			    return;
 		    }
 
 		    var prog = 0;
 		    
-		    FileEx.Copy(Value, target.ToString(), ref prog, progress);
+		    new FileEx(progress).Copy(Value, target.ToString(), ref prog);
 	    }
 
 	    public string SubpathFrom(IPath path)
@@ -49,12 +49,12 @@ namespace SharpFilePath
 			System.IO.File.Delete(Value);
 		}
 
-	    public override void Backup(SharpPath where, Action<long, long> progress)
+	    public override void Backup(Path where, Action<long, long, long> progress)
 	    {
 		    Copy(where, progress);
 	    }
 
-	    public override void Restore(SharpPath from, Action<long, long> progress)
+	    public override void Restore(Path from, Action<long, long, long> progress)
 	    {
 		    from.Copy(this, progress);
 	    }

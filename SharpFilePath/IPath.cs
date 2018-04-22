@@ -7,11 +7,11 @@ namespace SharpFilePath
 	{
 		bool Exists { get; }
 		void Remove();
-		void Backup(SharpPath where, Action<long, long> progress);
-		void Restore(SharpPath where, Action<long, long> progress);
-		void Copy(SharpPath where, Action<long, long> progress);
+		void Backup(Path where, Action<long, long, long> progress);
+		void Restore(Path where, Action<long, long, long> progress);
+		void Copy(Path where, Action<long, long, long> progress);
 		IFolder ParentDirectory { get; }
-		SharpPath Combine(string childPath);
-		SharpPath Resolve(SharpPath pwd);
+		Path Combine(string childPath);
+		Path Resolve(Path pwd);
 	}
 }

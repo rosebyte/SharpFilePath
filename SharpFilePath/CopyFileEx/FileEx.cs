@@ -3,22 +3,42 @@ using System.Runtime.InteropServices;
 
 namespace SharpFilePath.CopyFileEx
 {
-    public static class FileEx
+    public class FileEx
     {
-        private static CopyProgressRoutine GetRoutine(Action<long, long> progress)
+        private long _processed;
+        private readonly Action<long, long, long> _progress;
+
+        public FileEx(Action<long, long, long> progress)
         {
-            return (total, transferred, a, b, c, d, e, f, g) =>
-            {
-                progress?.Invoke(transferred, total);
-                return CopyProgressResult.PROGRESS_CONTINUE;
-            };;
+            _progress = progress;
         }
         
-        public static void Copy(string source, string dest, ref int cancel, Action<long, long> progress)
+        private CopyProgressRoutine GetRoutine()
         {
-            CopyFileEx(source, dest, GetRoutine(progress), IntPtr.Zero, ref cancel, CopyFileFlags.COPY_FILE_RESTARTABLE);
+            return CopyProgressRoutineImpl;
         }
-    
+        
+        public void Copy(string source, string dest, ref int cancel)
+        {
+            CopyFileEx(source, dest, CopyProgressRoutineImpl, IntPtr.Zero, ref cancel, CopyFileFlags.COPY_FILE_RESTARTABLE);
+        }
+
+        private CopyProgressResult CopyProgressRoutineImpl(
+            long totalFileSize,
+            long totalBytesTransferred,
+            long streamSize,
+            long streamBytesTransferred,
+            uint dwStreamNumber,
+            CopyProgressCallbackReason dwCallbackReason,
+            IntPtr hSourceFile,
+            IntPtr hDestinationFile,
+            IntPtr lpData)
+        {
+            _progress?.Invoke(totalFileSize - _processed, totalBytesTransferred, totalFileSize);
+            _processed = totalBytesTransferred;
+            return CopyProgressResult.PROGRESS_CONTINUE;
+        }
+        
         #region DLL Import
     
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]

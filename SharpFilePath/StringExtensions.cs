@@ -2,6 +2,6 @@
 {
     public static class StringExtensions
     {
-        public static SharpPath ToPath(this string path) => SharpPath.FromString(path);
+        public static Path ToPath(this string path) => Path.FromString(path);
     }
 }
