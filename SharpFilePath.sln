@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.0.0
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpFilePath", "SharpFilePath\SharpFilePath.csproj", "{492E32C6-D186-450B-A0E9-156728ECABE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpFilepath.Tests", "SharpFilepath.Tests\SharpFilepath.Tests.csproj", "{A90203DA-CD95-48F7-BCF9-0D3EC652DF36}"
+EndProject
+Global
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{492E32C6-D186-450B-A0E9-156728ECABE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{492E32C6-D186-450B-A0E9-156728ECABE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{492E32C6-D186-450B-A0E9-156728ECABE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{492E32C6-D186-450B-A0E9-156728ECABE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A90203DA-CD95-48F7-BCF9-0D3EC652DF36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A90203DA-CD95-48F7-BCF9-0D3EC652DF36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A90203DA-CD95-48F7-BCF9-0D3EC652DF36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A90203DA-CD95-48F7-BCF9-0D3EC652DF36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+EndGlobal
