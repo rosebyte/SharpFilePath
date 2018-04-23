@@ -37,7 +37,7 @@ namespace SharpFilePath
         {
             destination.GetFolders().Except(GetFolders()).ToList().ForEach(x => x.Child.Remove());
             destination.GetFiles().Except(GetFiles()).ToList().ForEach(x => x.Child.Remove());
-            GetFolders().ToList().ForEach(x => x.Child.EnsureDirectoryCreated());
+            GetFolders().ToList().ForEach(x => ((Folder)destination.Combine(x.Value)).CreateIfNotExists());
         }
 
         public IEnumerable<SubPath<IFile>> NewerFilesThan(IFolder destination)
@@ -64,7 +64,7 @@ namespace SharpFilePath
             var results = Directory.EnumerateFiles(
                 Value,
                 mask ?? "*",
-                recursive ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             
             if (exceptions != null)
             {
@@ -79,7 +79,7 @@ namespace SharpFilePath
             var results = Directory.EnumerateDirectories(
                 Value,
                 mask ?? "*",
-                recursive ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             
             if (exceptions != null)
             {
@@ -89,7 +89,7 @@ namespace SharpFilePath
             return results.Select(x => new SubPath<IFolder>(this, new Folder(x)));
         }
 
-        public virtual void EnsureDirectoryCreated()
+        public void CreateIfNotExists()
         {
             if (Exists)
             {
@@ -103,7 +103,7 @@ namespace SharpFilePath
             
             if (!ParentDirectory.Exists)
             {
-                ParentDirectory.EnsureDirectoryCreated();
+                ParentDirectory.CreateIfNotExists();
             }
 
             Directory.CreateDirectory(Value);

@@ -12,7 +12,7 @@ namespace SharpFilePath
         {
             Parent = parent;
             Child = child;
-            Value = child.ToString().Substring(parent.ToString().Length);
+            Value = child.ToString().Substring(parent.ToString().Length + 1);
         }
         
         public override bool Equals(object obj) => Equals(obj as SubPath<T>);

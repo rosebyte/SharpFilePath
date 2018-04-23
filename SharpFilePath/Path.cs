@@ -22,17 +22,27 @@ namespace SharpFilePath
 		
 		public static Path FromString(string path)
 		{
-			if (System.IO.File.Exists(path))
+			if (string.IsNullOrWhiteSpace(path))
 			{
-				return new File(path);
+				return new EmptyPath(path);
 			}
-
+			
 			if (Directory.Exists(path))
 			{
 				return new Folder(path);
 			}
 			
-			return new EmptyPath(path);
+			if (System.IO.File.Exists(path))
+			{
+				return new File(path);
+			}
+			
+			if (string.IsNullOrEmpty(System.IO.Path.GetExtension(path)))
+			{
+				return new Folder(path);
+			}
+			
+			return new File(path);
 		}
 
 		private bool IsIn(Path path) => Value.StartsWith(path.ToString());

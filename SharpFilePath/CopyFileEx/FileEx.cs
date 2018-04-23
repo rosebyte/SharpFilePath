@@ -34,7 +34,7 @@ namespace SharpFilePath.CopyFileEx
             IntPtr hDestinationFile,
             IntPtr lpData)
         {
-            _progress?.Invoke(totalFileSize - _processed, totalBytesTransferred, totalFileSize);
+            _progress?.Invoke(totalBytesTransferred - _processed, totalBytesTransferred, totalFileSize);
             _processed = totalBytesTransferred;
             return CopyProgressResult.PROGRESS_CONTINUE;
         }

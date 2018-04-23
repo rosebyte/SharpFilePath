@@ -88,7 +88,7 @@ namespace SharpFilepath.Tests
             var parent = sut.ParentDirectory;
             var name = sut.ToString().Split('\\').Last();
             
-            Assert.That(parent.Combine(name), Is.EqualTo(sut));
+            Assert.That(parent.Combine(name).ToString(), Is.EqualTo(sut.ToString()));
         }
         
         [Test]

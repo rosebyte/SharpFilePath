@@ -10,6 +10,6 @@ namespace SharpFilePath.Interfaces
             IEnumerable<string> exceptions = null);
         IEnumerable<SubPath<IFolder>> GetFolders(bool recursive = true, string mask = null, 
             IEnumerable<string> exceptions = null);
-        void EnsureDirectoryCreated();
+        void CreateIfNotExists();
     }
 }
