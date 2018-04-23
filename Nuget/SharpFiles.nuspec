@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>RoseByte.SharpFiles</id>
+    <version>1.0.0</version>
+    <title>SharpFiles</title>
+    <authors>Jaroslav Ruzicka</authors>
+    <owners>Jaroslav Ruzicka</owners>
+    <licenseUrl>https://github.com/rosebyte/SharpFilePath/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/rosebyte/SharpFilePath/tree/master/adosession</projectUrl>
+    <iconUrl>https://png.icons8.com/ios-glyphs/50/000000/document.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>File system abstraction focusing on testability and high-level features.</description>
+    <releaseNotes>Initial package with first beta version.</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>File Folder Filesystem IO</tags>
+  </metadata>
+  <files>
+    <file src="..\SharpFilePath\bin\Release\RoseByte.SharpFiles.dll" target="lib\net40\" />
+  </files>
+</package>

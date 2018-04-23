@@ -7,8 +7,8 @@
     <ProjectGuid>{492E32C6-D186-450B-A0E9-156728ECABE3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpFilePath</RootNamespace>
-    <AssemblyName>SharpFilePath</AssemblyName>
+    <RootNamespace>RoseByte.SharpFiles</RootNamespace>
+    <AssemblyName>RoseByte.SharpFiles</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
