@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpFilePath.Interfaces
+namespace RoseByte.SharpFiles.Interfaces
 {
 	public interface IPath
 	{

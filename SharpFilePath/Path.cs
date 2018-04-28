@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
-using SharpFilePath.Interfaces;
+using RoseByte.SharpFiles.Extensions;
+using RoseByte.SharpFiles.Interfaces;
 
-namespace SharpFilePath
+namespace RoseByte.SharpFiles
 {
 	public abstract class Path : IPath
 	{

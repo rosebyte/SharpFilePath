@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SharpFilePath.CopyFileEx
+namespace RoseByte.SharpFiles.CopyFileEx
 {
     public class FileEx
     {

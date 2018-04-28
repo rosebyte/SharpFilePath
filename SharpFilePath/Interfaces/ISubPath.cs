@@ -1,4 +1,4 @@
-﻿namespace SharpFilePath.Interfaces
+﻿namespace RoseByte.SharpFiles.Interfaces
 {
     public interface ISubPath<out T>
     {

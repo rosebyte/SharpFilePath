@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpFilePath.Interfaces;
+using RoseByte.SharpFiles.Interfaces;
 
-namespace SharpFilePath
+namespace RoseByte.SharpFiles
 {
     public class Folder : Path, IFolder
     {

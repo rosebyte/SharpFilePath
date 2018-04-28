@@ -1,6 +1,6 @@
-﻿using SharpFilePath.Interfaces;
+﻿using RoseByte.SharpFiles.Interfaces;
 
-namespace SharpFilePath
+namespace RoseByte.SharpFiles
 {
     public class SubPath<T> : ISubPath<T>
     {

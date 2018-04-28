@@ -8,8 +8,8 @@
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpFilepath.Tests</RootNamespace>
-    <AssemblyName>SharpFilepath.Tests</AssemblyName>
+    <RootNamespace>RoseByte.SharpFiles.Tests</RootNamespace>
+    <AssemblyName>RoseByte.SharpFiles.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,11 +42,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FilePathTests.cs" />
     <Compile Include="FileTests.cs" />
     <Compile Include="FolderTests.cs" />
     <Compile Include="PathTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubPathTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharpFilePath\SharpFilePath.csproj">

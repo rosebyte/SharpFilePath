@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using SharpFilePath.CopyFileEx;
-using SharpFilePath.Interfaces;
+using System.Security.Cryptography;
+using RoseByte.SharpFiles.CopyFileEx;
+using RoseByte.SharpFiles.Interfaces;
 
-namespace SharpFilePath
+namespace RoseByte.SharpFiles
 {
     public class File : Path, IFile
     {
@@ -12,7 +13,8 @@ namespace SharpFilePath
 	    
 	    private string _content;
 		public string Content => _content ?? (_content = System.IO.File.ReadAllText(Value));
-	    
+
+	    public byte[] Hash => SHA256.Create().ComputeHash(System.IO.File.ReadAllBytes(Value));
 	    
 	    private readonly Lazy<FileInfo> _fileInfo;
 	    public DateTime Changed => _fileInfo.Value.LastWriteTime;
@@ -26,6 +28,11 @@ namespace SharpFilePath
 
 	    public override void Copy(Path target, Action<long, long, long> progress)
 	    {
+		    if (!(target is IFile))
+		    {
+			    throw new Exception("File can be copied only to file path, not");
+		    }
+		    
 		    if (Size < 1000)
 		    {
 			    System.IO.File.Copy(Value, target.ToString(), true);

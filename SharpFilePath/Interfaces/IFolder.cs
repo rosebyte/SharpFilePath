@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SharpFilePath.Interfaces
+namespace RoseByte.SharpFiles.Interfaces
 {
     public interface IFolder : IPath
     {

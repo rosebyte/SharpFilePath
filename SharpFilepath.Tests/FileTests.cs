@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using NUnit.Framework;
-using SharpFilePath;
+using RoseByte.SharpFiles.Extensions;
 
-namespace SharpFilepath.Tests
+namespace RoseByte.SharpFiles.Tests
 {
     [TestFixture]
     public class FileTests
@@ -22,7 +21,7 @@ namespace SharpFilepath.Tests
             folder.CreateIfNotExists();
             System.IO.File.WriteAllText(folder.Combine("test1.txt"), "ABCD");
 
-            var sut = folder.Combine("test1.txt") as SharpFilePath.File;
+            var sut = folder.Combine("test1.txt") as File;
             
             Assert.That(sut, Is.Not.Null);
             
@@ -36,8 +35,8 @@ namespace SharpFilepath.Tests
             Assert.That(System.IO.File.Exists(folder.Combine("test2.txt").ToString()));
             
             Assert.That(
-                ((SharpFilePath.File)folder.Combine("test1.txt")).Content, 
-                Is.EqualTo(((SharpFilePath.File)folder.Combine("test2.txt")).Content));
+                ((File)folder.Combine("test1.txt")).Content, 
+                Is.EqualTo(((File)folder.Combine("test2.txt")).Content));
             
             folder.Remove();
         }
@@ -47,8 +46,8 @@ namespace SharpFilepath.Tests
         {
             var progresses = new List<(long, long, long)>();
             
-            var sut = (SharpFilePath.File)SharpFilePath.Path.FromString("C:\\Home\\Downloads\\node-v9.10.1-x64.msi");
-            var target = (SharpFilePath.File)SharpFilePath.Path.FromString("C:\\Home\\Downloads\\node-v9.10.1-x64_new.msi");
+            var sut = (File)Path.FromString("C:\\Home\\Downloads\\node-v9.10.1-x64.msi");
+            var target = (File)Path.FromString("C:\\Home\\Downloads\\node-v9.10.1-x64_new.msi");
             
             sut.Copy(target, (a, b, c) => progresses.Add((a, b, c)));
             

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpFilePath.CopyFileEx
+namespace RoseByte.SharpFiles.CopyFileEx
 {
     [Flags]
     enum CopyFileFlags : uint

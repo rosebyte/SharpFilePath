@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpFilePath
+namespace RoseByte.SharpFiles
 {
     public class EmptyPath : Path
     {

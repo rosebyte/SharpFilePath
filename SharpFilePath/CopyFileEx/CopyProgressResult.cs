@@ -1,4 +1,4 @@
-﻿namespace SharpFilePath.CopyFileEx
+﻿namespace RoseByte.SharpFiles.CopyFileEx
 {
     enum CopyProgressResult : uint
     {

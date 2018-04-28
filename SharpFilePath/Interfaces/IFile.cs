@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpFilePath.Interfaces
+namespace RoseByte.SharpFiles.Interfaces
 {
     public interface IFile : IPath
     {
@@ -10,5 +10,6 @@ namespace SharpFilePath.Interfaces
         string Content { get; }
         string NameWithoutExtension { get; }
         string Name { get; }
+        byte[] Hash { get; }
     }
 }

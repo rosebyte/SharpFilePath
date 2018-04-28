@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using SharpFilePath;
+using RoseByte.SharpFiles.Extensions;
 
-namespace SharpFilepath.Tests
+namespace RoseByte.SharpFiles.Tests
 {
     [TestFixture]
     public class FolderTests
