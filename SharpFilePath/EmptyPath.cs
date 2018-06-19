@@ -1,4 +1,5 @@
 ﻿using System;
+using RoseByte.SharpFiles.Interfaces;
 
 namespace RoseByte.SharpFiles
 {
@@ -8,6 +9,6 @@ namespace RoseByte.SharpFiles
         
         public override bool Exists => false;
         public override void Remove() { }
-        public override void Copy(Path target, Action<long, long, long> progress) { }
+        public override void Copy(IPath target, Action<long, long, long> progress) { }
     }
 }

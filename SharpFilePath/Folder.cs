@@ -17,7 +17,7 @@ namespace RoseByte.SharpFiles
             Directory.Delete(Value, true);
         }
 
-        public override void Copy(Path target, Action<long, long, long> progress)
+        public override void Copy(IPath target, Action<long, long, long> progress)
         {
             if (!(target is IFolder dest))
             {
@@ -40,7 +40,7 @@ namespace RoseByte.SharpFiles
             GetFolders().ToList().ForEach(x => ((Folder)destination.Combine(x.Value)).CreateIfNotExists());
         }
 
-        public IEnumerable<SubPath<IFile>> NewerFilesThan(IFolder destination)
+        public IEnumerable<ISubPath<IFile>> NewerFilesThan(IFolder destination)
         {
             var dest = destination.GetFiles().ToDictionary(x => x.ToString(), x => x.Child);
             
@@ -59,7 +59,7 @@ namespace RoseByte.SharpFiles
             }
         }
         
-        public IEnumerable<SubPath<IFile>> GetFiles(bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
+        public IEnumerable<ISubPath<IFile>> GetFiles(bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
         {
             var results = Directory.EnumerateFiles(
                 Value,
@@ -74,7 +74,7 @@ namespace RoseByte.SharpFiles
             return results.Select(x => new SubPath<IFile>(this, new File(x)));
         }
 
-        public IEnumerable<SubPath<IFolder>> GetFolders(bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
+        public IEnumerable<ISubPath<IFolder>> GetFolders(bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
         {
             var results = Directory.EnumerateDirectories(
                 Value,

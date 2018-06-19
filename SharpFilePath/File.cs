@@ -26,7 +26,7 @@ namespace RoseByte.SharpFiles
 		    _fileInfo = new Lazy<FileInfo>(() => new FileInfo(value));
 	    }
 
-	    public override void Copy(Path target, Action<long, long, long> progress)
+	    public override void Copy(IPath target, Action<long, long, long> progress)
 	    {
 		    if (!(target is IFile))
 		    {
