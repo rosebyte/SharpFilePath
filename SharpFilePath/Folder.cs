@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using RoseByte.SharpFiles.Extensions;
 using RoseByte.SharpFiles.Interfaces;
 
 namespace RoseByte.SharpFiles
@@ -27,17 +28,19 @@ namespace RoseByte.SharpFiles
             NewerFilesThan(dest).ToList().ForEach(x => x.Child.Copy(dest.Combine(x.Value), progress));
         }
 
-        public void Mirror(IFolder target, Action<long, long, long> progress)
+        public void Mirror(IFolder target, Action<long, long, long> progress, IEnumerable<string> exceptions = null)
         {
-            SyncStructure(target);
+            SyncStructure(target, exceptions);
             NewerFilesThan(target).ToList().ForEach(x => x.Child.Copy(target.Combine(x.Value), progress));
         }
 
-        public void SyncStructure(IFolder destination)
+        public void SyncStructure(IFolder destination, IEnumerable<string> exceptions = null)
         {
-            destination.GetFolders().Except(GetFolders()).ToList().ForEach(x => x.Child.Remove());
-            destination.GetFiles().Except(GetFiles()).ToList().ForEach(x => x.Child.Remove());
-            GetFolders().ToList().ForEach(x => ((Folder)destination.Combine(x.Value)).CreateIfNotExists());
+            var skips = exceptions?.ToList() ?? new List<string>();
+            
+            destination.GetFolders(true, null, skips).Except(GetFolders()).ToList().ForEach(x => x.Child.Remove());
+            destination.GetFiles().Except(GetFiles(true, null, skips)).ToList().ForEach(x => x.Child.Remove());
+            GetFolders().ToList().ForEach(x => (destination.GetSubFolder(x.Value)).CreateIfNotExists());
         }
 
         public IEnumerable<ISubPath<IFile>> NewerFilesThan(IFolder destination)

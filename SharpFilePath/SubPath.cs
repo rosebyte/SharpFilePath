@@ -5,10 +5,10 @@ namespace RoseByte.SharpFiles
     public class SubPath<T> : ISubPath<T>
     {
         public string Value { get; }
-        public Folder Parent { get; }
+        public IFolder Parent { get; }
         public T Child { get; }
         
-        public SubPath(Folder parent, T child)
+        public SubPath(IFolder parent, T child)
         {
             Parent = parent;
             Child = child;

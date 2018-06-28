@@ -66,11 +66,13 @@ namespace RoseByte.SharpFiles
 			return ReferenceEquals(Value, other.ToString());
 		}
 
-		public Path Combine(string pathPart) => System.IO.Path.Combine(Value, pathPart).ToPath();
+		public IPath Combine(string pathPart) => System.IO.Path.Combine(Value, pathPart).ToPath();
+
+		public IFolder GetSubFolder(string pathPart) => new Folder(System.IO.Path.Combine(Value, pathPart));
 		
 		public override int GetHashCode() => (Value != null ? Value.GetHashCode() : 0);
 		
-		public Path Resolve(Path pwd)
+		public IPath Resolve(Path pwd)
 		{
 			if (pwd == null || pwd is EmptyPath)
 			{

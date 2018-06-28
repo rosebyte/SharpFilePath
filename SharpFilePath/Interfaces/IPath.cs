@@ -8,7 +8,8 @@ namespace RoseByte.SharpFiles.Interfaces
 		void Remove();
 		void Copy(IPath where, Action<long, long, long> progress);
 		IFolder ParentDirectory { get; }
-		Path Combine(string childPath);
-		Path Resolve(Path pwd);
+		IPath Combine(string childPath);
+		IPath Resolve(Path pwd);
+		IFolder GetSubFolder(string pathPart);
 	}
 }

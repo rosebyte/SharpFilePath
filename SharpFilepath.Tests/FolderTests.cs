@@ -31,6 +31,14 @@ namespace RoseByte.SharpFiles.Tests
             Assert.That(Directory.Exists(secondFolder), Is.False);
             Assert.That(Directory.Exists(thirdFolder), Is.False);
         }
+        
+        [Test]
+        public void ShouldCreateFolderWithDot()
+        {
+            var sut = new Folder("C:\\Test.Folder");
+            
+            Assert.That(sut.ToString(), Is.EqualTo("C:\\Test.Folder"));
+        }
 
         [Test]
         public void ShouldReturnFolders()
@@ -55,8 +63,8 @@ namespace RoseByte.SharpFiles.Tests
             
             Assert.That(sut, Is.Not.Null);
             
-            System.IO.File.WriteAllText(sut.Combine("test1.txt"), "A");
-            System.IO.File.WriteAllText(sut.Combine("test2.txt"), "B");
+            System.IO.File.WriteAllText(sut.Combine("test1.txt").ToString(), "A");
+            System.IO.File.WriteAllText(sut.Combine("test2.txt").ToString(), "B");
             
             System.IO.File.WriteAllText(sut.Combine("Subfolder\\test3.txt").ToString(), "C");
             System.IO.File.WriteAllText(sut.Combine("Subfolder\\test4.txt").ToString(), "D");
@@ -86,19 +94,19 @@ namespace RoseByte.SharpFiles.Tests
             
             ((Folder)donor.Combine("Subfolder")).CreateIfNotExists();
             ((Folder)donor.Combine("Subfolder2")).CreateIfNotExists();
-            System.IO.File.WriteAllText(donor.Combine("test1.txt"), "A");
-            System.IO.File.WriteAllText(donor.Combine("test2.txt"), "A");
-            System.IO.File.WriteAllText(donor.Combine("Subfolder\\test3.txt"), "A");
-            System.IO.File.WriteAllText(donor.Combine("Subfolder2\\test4.txt"), "A");
-            System.IO.File.WriteAllText(donor.Combine("Subfolder2\\test5.txt"), "A");
+            System.IO.File.WriteAllText(donor.Combine("test1.txt").ToString(), "A");
+            System.IO.File.WriteAllText(donor.Combine("test2.txt").ToString(), "A");
+            System.IO.File.WriteAllText(donor.Combine("Subfolder\\test3.txt").ToString(), "A");
+            System.IO.File.WriteAllText(donor.Combine("Subfolder2\\test4.txt").ToString(), "A");
+            System.IO.File.WriteAllText(donor.Combine("Subfolder2\\test5.txt").ToString(), "A");
             
             ((Folder)acceptor.Combine("Subfolder2")).CreateIfNotExists();
             ((Folder)acceptor.Combine("Subfolder3")).CreateIfNotExists();
-            System.IO.File.WriteAllText(acceptor.Combine("test1.txt"), "A");
-            System.IO.File.WriteAllText(acceptor.Combine("test3.txt"), "A");
-            System.IO.File.WriteAllText(acceptor.Combine("Subfolder2\\test4.txt"), "A");
-            System.IO.File.WriteAllText(acceptor.Combine("Subfolder2\\test1.txt"), "A");
-            System.IO.File.WriteAllText(acceptor.Combine("Subfolder3\\test5.txt"), "A");
+            System.IO.File.WriteAllText(acceptor.Combine("test1.txt").ToString(), "A");
+            System.IO.File.WriteAllText(acceptor.Combine("test3.txt").ToString(), "A");
+            System.IO.File.WriteAllText(acceptor.Combine("Subfolder2\\test4.txt").ToString(), "A");
+            System.IO.File.WriteAllText(acceptor.Combine("Subfolder2\\test1.txt").ToString(), "A");
+            System.IO.File.WriteAllText(acceptor.Combine("Subfolder3\\test5.txt").ToString(), "A");
             
             donor.SyncStructure(acceptor);
 

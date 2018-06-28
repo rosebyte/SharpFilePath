@@ -19,7 +19,7 @@ namespace RoseByte.SharpFiles.Tests
             
             var folder = (Folder)AppFolder.Combine("CopyTest");
             folder.CreateIfNotExists();
-            System.IO.File.WriteAllText(folder.Combine("test1.txt"), "ABCD");
+            System.IO.File.WriteAllText(folder.Combine("test1.txt").ToString(), "ABCD");
 
             var sut = folder.Combine("test1.txt") as File;
             

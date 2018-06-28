@@ -3,7 +3,7 @@
     public interface ISubPath<out T>
     {
         string Value { get; }
-        Folder Parent { get; }
+        IFolder Parent { get; }
         T Child { get; }
     }
 }
