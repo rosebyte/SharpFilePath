@@ -38,9 +38,9 @@ namespace RoseByte.SharpFiles
         {
             var skips = exceptions?.ToList() ?? new List<string>();
             
-            destination.GetFolders(true, null, skips).Except(GetFolders()).ToList().ForEach(x => x.Child.Remove());
-            destination.GetFiles().Except(GetFiles(true, null, skips)).ToList().ForEach(x => x.Child.Remove());
-            GetFolders().ToList().ForEach(x => (destination.GetSubFolder(x.Value)).CreateIfNotExists());
+            destination.GetFolders(true, null, skips).Except(GetFolders(true, null, skips)).ToList().ForEach(x => x.Child.Remove());
+            destination.GetFiles(true, null, skips).Except(GetFiles(true, null, skips)).ToList().ForEach(x => x.Child.Remove());
+            GetFolders(true, null, skips).ToList().ForEach(x => (destination.GetSubFolder(x.Value)).CreateIfNotExists());
         }
 
         public IEnumerable<ISubPath<IFile>> NewerFilesThan(IFolder destination)
@@ -62,34 +62,31 @@ namespace RoseByte.SharpFiles
             }
         }
         
-        public IEnumerable<ISubPath<IFile>> GetFiles(bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
+        public IEnumerable<ISubPath<IFile>> GetFiles(
+            bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
         {
+            var expList = exceptions?.ToList() ?? new List<string>();
             var results = Directory.EnumerateFiles(
                 Value,
                 mask ?? "*",
                 recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             
-            if (exceptions != null)
-            {
-                results = results.Where(x => !exceptions.Any(x.StartsWith)).ToList();
-            }
-
-            return results.Select(x => new SubPath<IFile>(this, new File(x)));
+            return results
+                .Select(x => new SubPath<IFile>(this, new File(x)))
+                .Where(x => !expList.Any(y => x.Value.StartsWith(y)));
         }
 
-        public IEnumerable<ISubPath<IFolder>> GetFolders(bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
+        public IEnumerable<ISubPath<IFolder>> GetFolders(
+            bool recursive = true, string mask = null, IEnumerable<string> exceptions = null)
         {
+            var expList = exceptions?.ToList() ?? new List<string>();
             var results = Directory.EnumerateDirectories(
                 Value,
                 mask ?? "*",
                 recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             
-            if (exceptions != null)
-            {
-                results = results.Where(x => !exceptions.Any(x.StartsWith)).ToList();
-            }
-
-            return results.Select(x => new SubPath<IFolder>(this, new Folder(x)));
+            return results.Select(x => new SubPath<IFolder>(this, new Folder(x)))
+                .Where(x => !expList.Any(y => x.Value.StartsWith(y)));
         }
 
         public void CreateIfNotExists()

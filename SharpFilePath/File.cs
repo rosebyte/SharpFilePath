@@ -47,6 +47,11 @@ namespace RoseByte.SharpFiles
 
 	    public override void Remove()
 		{
+
+			if ((System.IO.File.GetAttributes(Value) & FileAttributes.ReadOnly) != 0)
+			{
+				System.IO.File.SetAttributes(Value, FileAttributes.Normal);
+			};
 			System.IO.File.Delete(Value);
 		}
 

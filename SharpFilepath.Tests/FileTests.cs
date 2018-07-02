@@ -46,8 +46,8 @@ namespace RoseByte.SharpFiles.Tests
         {
             var progresses = new List<(long, long, long)>();
             
-            var sut = (File)Path.FromString("C:\\Home\\Downloads\\node-v9.10.1-x64.msi");
-            var target = (File)Path.FromString("C:\\Home\\Downloads\\node-v9.10.1-x64_new.msi");
+            var sut = (File)AppFolder.Combine("TestFiles\\nuget.exe");
+            var target = (File)AppFolder.Combine("TestFiles\\nuget2.exe");
             
             sut.Copy(target, (a, b, c) => progresses.Add((a, b, c)));
             
