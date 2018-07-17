@@ -15,7 +15,32 @@ namespace RoseByte.SharpFiles
 
         public override void Remove()
         {
+            if (!Exists)
+            {
+                return;
+            }
+            
             Directory.Delete(Value, true);
+        }
+
+        public override void Copy(IPath target)
+        {
+            if (!(target is IFolder dest))
+            {
+                throw new Exception("Folder can be copied only to folder.");
+            }
+            
+            GetFiles().ToList().ForEach(x => x.Child.Copy(dest.Combine(x.Value)));
+        }
+        
+        public void Copy(IPath target, Predicate<ISubPath<IFile>> predicate)
+        {
+            if (!(target is IFolder dest))
+            {
+                throw new Exception("Folder can be copied only to folder.");
+            }
+            
+            GetFiles().Where(x => predicate(x)).ToList().ForEach(x => x.Child.Copy(dest.Combine(x.Value)));
         }
 
         public override void Copy(IPath target, Action<long, long, long> progress)
@@ -25,9 +50,9 @@ namespace RoseByte.SharpFiles
                 throw new Exception("Folder can be copied only to folder.");
             }
             
-            NewerFilesThan(dest).ToList().ForEach(x => x.Child.Copy(dest.Combine(x.Value), progress));
+            GetFiles().ToList().ForEach(x => x.Child.Copy(dest.Combine(x.Value), progress));
         }
-
+        
         public void Mirror(IFolder target, Action<long, long, long> progress, IEnumerable<string> exceptions = null)
         {
             SyncStructure(target, exceptions);
@@ -38,8 +63,10 @@ namespace RoseByte.SharpFiles
         {
             var skips = exceptions?.ToList() ?? new List<string>();
             
-            destination.GetFolders(true, null, skips).Except(GetFolders(true, null, skips)).ToList().ForEach(x => x.Child.Remove());
-            destination.GetFiles(true, null, skips).Except(GetFiles(true, null, skips)).ToList().ForEach(x => x.Child.Remove());
+            destination.GetFolders(true, null, skips).Except(GetFolders(true, null, skips)).ToList()
+                .ForEach(x => x.Child.Remove());
+            destination.GetFiles(true, null, skips).Except(GetFiles(true, null, skips)).ToList()
+                .ForEach(x => x.Child.Remove());
             GetFolders(true, null, skips).ToList().ForEach(x => (destination.GetSubFolder(x.Value)).CreateIfNotExists());
         }
 

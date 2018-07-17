@@ -61,5 +61,16 @@ namespace RoseByte.SharpFiles.Tests
 
             target.Remove();
         }
+        
+        [Test]
+        public void ShouldThrowOnCopyingOverLockedFile()
+        {
+            var sut = (File)AppFolder.Combine("TestFiles\\nuget.exe");
+            var target = (File)AppFolder.Combine("RoseByte.SharpFiles.Tests.dll");
+            
+            Assert.That(
+                () => sut.Copy(target, (a, b, c) => {}), 
+                Throws.Exception.With.Message.EqualTo($"File '{sut}' could not be copied to '{target}'"));
+        }
     }
 }

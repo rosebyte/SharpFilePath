@@ -96,5 +96,6 @@ namespace RoseByte.SharpFiles
 		public abstract bool Exists { get; }
 		public abstract void Remove();
 		public abstract void Copy(IPath target, Action<long, long, long> progress);
+		public abstract void Copy(IPath target);
 	}
 }

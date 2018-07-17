@@ -12,5 +12,6 @@ namespace RoseByte.SharpFiles.Interfaces
             IEnumerable<string> exceptions = null);
         void CreateIfNotExists();
         void SyncStructure(IFolder destination, IEnumerable<string> exceptions = null);
+        void Copy(IPath target, Predicate<ISubPath<IFile>> predicate);
     }
 }
