@@ -12,7 +12,7 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldCreateDirectoryInstance()
         {
-            var sut = Path.FromString("C:\\");
+            var sut = FsObject.FromString("C:\\");
             
             Assert.That(sut.ToString(), Is.EqualTo("C:\\"));
             Assert.That(sut is Folder);
@@ -25,7 +25,7 @@ namespace RoseByte.SharpFiles.Tests
                 Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName,
                 "nunit.framework.dll");
             
-            var sut = Path.FromString(path);
+            var sut = FsObject.FromString(path);
             
             Assert.That(sut is File);
         }
@@ -33,17 +33,17 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldCreateEmptyInstance()
         {
-            var sut = Path.FromString("");
+            var sut = FsObject.FromString("");
             Assert.That(sut is EmptyPath);
             
-            sut = Path.FromString(null);
+            sut = FsObject.FromString(null);
             Assert.That(sut is EmptyPath);
         }
 
         [Test]
         public void ShouldImplicitlyConvertToString()
         {
-            var sut = Path.FromString("C:\\");
+            var sut = FsObject.FromString("C:\\");
             
             Assert.That(sut == "C:\\");
         }
@@ -52,9 +52,9 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldHandleEqualOperators()
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-            var sut = Path.FromString("C:\\");
-            var sut2 = Path.FromString("C:\\");
-            var sut3 = Path.FromString(System.IO.Path.Combine(dir));
+            var sut = FsObject.FromString("C:\\");
+            var sut2 = FsObject.FromString("C:\\");
+            var sut3 = FsObject.FromString(System.IO.Path.Combine(dir));
             
             Assert.That(sut == sut2, Is.True);
             Assert.That(sut == sut3, Is.False);
@@ -65,9 +65,9 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldHandleGreaterOperators()
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-            var sut = Path.FromString(System.IO.Path.Combine(dir));
-            var sut2 = Path.FromString(System.IO.Path.Combine(dir));
-            var sut3 = sut.ParentDirectory as Path;
+            var sut = FsObject.FromString(System.IO.Path.Combine(dir));
+            var sut2 = FsObject.FromString(System.IO.Path.Combine(dir));
+            var sut3 = sut.ParentDirectory as FsObject;
             
             Assert.That(sut >= sut2, Is.True);
             Assert.That(sut2 >= sut, Is.True);
@@ -81,7 +81,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldCombine()
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-            var sut = Path.FromString(dir);
+            var sut = FsObject.FromString(dir);
             var parent = sut.ParentDirectory;
             var name = sut.ToString().Split('\\').Last();
             
@@ -93,7 +93,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
             var parentDir = Directory.GetParent(dir).FullName;
-            var sut = Path.FromString(dir);
+            var sut = FsObject.FromString(dir);
             var parent = sut.ParentDirectory;
             
             Assert.That(parent.ToString(), Is.EqualTo(parentDir));
@@ -106,7 +106,7 @@ namespace RoseByte.SharpFiles.Tests
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Name;
             var parentDir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName.ToPath();
             
-            var sut = Path.FromString($".\\{file}");
+            var sut = FsObject.FromString($".\\{file}");
             var result = sut.Resolve(parentDir);
             
             Assert.That(result.ToString(), Is.EqualTo(Assembly.GetExecutingAssembly().Location));
@@ -122,7 +122,7 @@ namespace RoseByte.SharpFiles.Tests
                 Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent?.FullName?? string.Empty,
                 file);
             
-            var sut = Path.FromString($"..\\{file}");
+            var sut = FsObject.FromString($"..\\{file}");
             var result = sut.Resolve(parentDir);
             
             Assert.That(result.ToString(), Is.EqualTo(expected));

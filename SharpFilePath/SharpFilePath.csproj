@@ -38,19 +38,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CopyFileEx\CopyFileFlags.cs" />
-    <Compile Include="CopyFileEx\CopyProgressCallbackReason.cs" />
-    <Compile Include="CopyFileEx\CopyProgressResult.cs" />
-    <Compile Include="CopyFileEx\FileEx.cs" />
-    <Compile Include="EmptyPath.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="File.cs" />
-    <Compile Include="Interfaces\IFile.cs" />
-    <Compile Include="Interfaces\IFolder.cs" />
-    <Compile Include="Interfaces\IPath.cs" />
-    <Compile Include="Interfaces\ISubPath.cs" />
-    <Compile Include="Path.cs" />
+    <Compile Include="FsObject.cs" />
     <Compile Include="Folder.cs" />
+    <Compile Include="Internal\CopyFileEx\CopyFileFlags.cs" />
+    <Compile Include="Internal\CopyFileEx\CopyProgressCallbackReason.cs" />
+    <Compile Include="Internal\CopyFileEx\CopyProgressResult.cs" />
+    <Compile Include="Internal\CopyFileEx\FileEx.cs" />
+    <Compile Include="Internal\Extensions\StringExtensions.cs" />
+    <Compile Include="Internal\FileImplementation.cs" />
+    <Compile Include="Internal\FileScanHelper.cs" />
+    <Compile Include="Internal\FolderImplementation.cs" />
+    <Compile Include="Internal\SubPathImplementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubPath.cs" />
   </ItemGroup>

@@ -5,33 +5,32 @@ namespace RoseByte.SharpFiles.CopyFileEx
 {
     public class FileEx
     {
-        private long _processed;
-        private long _size;
-        private readonly Action<long, long, long> _progress;
+        private int _processed;
+        private readonly Action<int> _progress;
 
-        public FileEx(Action<long, long, long> progress)
+        public FileEx(Action<int> progress)
         {
             _progress = progress;
         }
         
-        private CopyProgressRoutine GetRoutine()
-        {
-            return CopyProgressRoutineImpl;
-        }
-        
-        public void Copy(string source, string dest, long size, ref int cancel)
+        public void Copy(string source, string dest, ref int cancel)
         {
             var success = CopyFileEx(
-                source, dest, CopyProgressRoutineImpl, IntPtr.Zero, ref cancel, CopyFileFlags.COPY_FILE_RESTARTABLE);
+                source, 
+                dest, 
+                CopyProgressRoutineImpl, 
+                IntPtr.Zero, 
+                ref cancel, 
+                CopyFileFlags.COPY_FILE_RESTARTABLE);
             
             if (!success)
             {
                 throw new Exception($"File '{source}' could not be copied to '{dest}'");
             }
 
-            if (_processed != size)
+            if (_processed != 100)
             {
-                _progress(size - _processed, size, size);
+                _progress(100);
             }
         }
 
@@ -46,12 +45,12 @@ namespace RoseByte.SharpFiles.CopyFileEx
             IntPtr hDestinationFile,
             IntPtr lpData)
         {
-            var current = totalBytesTransferred - _processed;
-
-            if (current > 512 && 100 * current / totalFileSize >= 1)
+            var current = 100 * totalBytesTransferred / totalFileSize;
+            
+            if (current > _processed)
             {
-                _progress?.Invoke(totalBytesTransferred - _processed, totalBytesTransferred, totalFileSize);
-                _processed = totalBytesTransferred;
+                _processed = (int)current;
+                _progress?.Invoke(_processed);
             }
             
             return CopyProgressResult.PROGRESS_CONTINUE;
@@ -64,7 +63,7 @@ namespace RoseByte.SharpFiles.CopyFileEx
         private static extern bool CopyFileEx(string lpExistingFileName, string lpNewFileName, 
             CopyProgressRoutine lpProgressRoutine, IntPtr lpData, ref Int32 pbCancel, CopyFileFlags dwCopyFlags);
     
-        delegate CopyProgressResult CopyProgressRoutine(
+        private delegate CopyProgressResult CopyProgressRoutine(
             long totalFileSize,
             long totalBytesTransferred,
             long streamSize,
