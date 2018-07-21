@@ -2,54 +2,83 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using RoseByte.SharpFiles.Extensions;
 using RoseByte.SharpFiles.Internal;
+using File = RoseByte.SharpFiles.Internal.File;
 
 namespace RoseByte.SharpFiles
 {
     public class ScanHelper
     {
-        public Folder Base { get; }
+        private FsFolder Base { get; }
+        private readonly Regex _filter;
+        private readonly Regex _skip;
 
-        public ScanHelper(Folder folder)
+        public ScanHelper(FsFolder fsFolder, Regex filter, Regex skip)
         {
-            Base = folder;
+            Base = fsFolder;
+            _filter = filter;
+            _skip = skip;
         }
-        
-        public IEnumerable<SubPath<File>> GetFiles(string path, bool recursive, string mask, IList<Regex> exceptions)
-        {
-            var files = Directory.EnumerateFiles(path, mask ?? "*", SearchOption.TopDirectoryOnly);
 
+        public IEnumerable<FsSubPath<FsFolder>> GetFolders(string path, bool recursive)
+        {
+            var files = Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly);
+            
             foreach (var file in files)
             {
-                var subpath = new SubPathImplementation<File>(Base, new FileImplementation(file));
+                var subpath = new SubPath<FsFolder>(Base, new Folder(file));
                 
-                if (exceptions.Any(x => x.IsMatch(subpath.Value)))
+                if (!_filter?.IsMatch(subpath.Value) ?? false)
                 {
                     continue;
                 }
-
+                
+                if (_skip?.IsMatch(subpath.Value) ?? false)
+                {
+                    continue;
+                }
+                
                 yield return subpath;
-            }
 
-            if (!recursive)
-            {
-                yield break;
-            }
-
-            var directories = Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly);
-
-            foreach (var directory in directories)
-            {
-                var subfolder = new SubPathImplementation<Folder>(Base, new FolderImplementation(directory));
-
-                if (exceptions.Any(x => x.IsMatch(subfolder.Value)))
+                if (recursive)
                 {
-                    continue;
+                    foreach (var subFolder in GetFolders(subpath.Child, true))
+                    {
+                        yield return subFolder;
+                    }
                 }
-                
-                foreach (var dirFile in GetFiles(directory, true, mask, exceptions))
+            }
+        }
+        
+        public IEnumerable<FsSubPath<FsFile>> GetFiles(string path, bool recursive)
+        {
+            IEnumerable<FsFolder> folders = new []{path.ToFolder()};
+
+            if (recursive)
+            {
+                folders = folders.Union(GetFolders(path, true).Select(x => x.Child));
+            }
+
+            foreach (var folder in folders)
+            {
+                var files = Directory.EnumerateFiles(folder, "*", SearchOption.TopDirectoryOnly);
+
+                foreach (var file in files)
                 {
-                    yield return dirFile;
+                    var subpath = new SubPath<FsFile>(Base, new File(file));
+                    
+                    if (!_filter?.IsMatch(subpath.Value) ?? false)
+                    {
+                        continue;
+                    }
+                
+                    if (_skip?.IsMatch(subpath.Value) ?? false)
+                    {
+                        continue;
+                    }
+                
+                    yield return subpath;
                 }
             }
         }
