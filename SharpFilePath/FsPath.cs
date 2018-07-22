@@ -18,8 +18,6 @@ namespace RoseByte.SharpFiles
 		public abstract FsFolder Parent { get; }
 		public abstract bool Exists { get; }
 		public abstract void Remove();
-		public abstract void Copy(FsPath target);
-		public abstract void Copy(FsPath target, Action<int> progress);
 		
 		public static implicit operator string(FsPath input) => input.Value;
 		public override string ToString() => Value;

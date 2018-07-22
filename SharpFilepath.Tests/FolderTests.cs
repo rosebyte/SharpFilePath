@@ -16,26 +16,26 @@ namespace RoseByte.SharpFiles.Tests
         private static FsFolder AppFsFolder => 
             (FsFolder)Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName.ToPath();
 
-        [Test]
-        public void ShouldCreateFolderInstance()
+        [OneTimeSetUp]
+        public void CreateTestingStructure()
         {
-            var path = "C:\\";
-            var sut = path.ToFolder();
-            Assert.That(sut.Value, Is.EqualTo(path));
+            AppFsFolder.CombineFolder(nameof(ShouldCreateFolderWithParentFolder)).Create();
+
+            var firstFolder = Path.Combine(AppFsFolder, "FolderCreationTest");
+            var secondFolder = Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder");
+            var thirdFolder =Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder\\OneMoreSubfolder");
         }
         
-        [Test]
-        public void ShouldReturnFalseToIsFolder()
+        [OneTimeTearDown]
+        public void RemoveTestingStructure()
         {
-            var sut = "C:\\".ToFolder();
-            Assert.That(sut.IsFile, Is.False);
-            Assert.That(sut.IsFolder, Is.True);
+            
         }
         
         [Test]
         public void ShouldCreateFolderWithParentFolder()
         {
-            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder\\OneMoreSubfolder").CreateIfNotExists();
+            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder\\OneMoreSubfolder").Create();
 
             var firstFolder = Path.Combine(AppFsFolder, "FolderCreationTest");
             var secondFolder = Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder");
@@ -50,6 +50,22 @@ namespace RoseByte.SharpFiles.Tests
             Assert.That(Directory.Exists(firstFolder), Is.False);
             Assert.That(Directory.Exists(secondFolder), Is.False);
             Assert.That(Directory.Exists(thirdFolder), Is.False);
+        }
+        
+        [Test]
+        public void ShouldCreateFolderInstance()
+        {
+            var path = "C:\\";
+            var sut = path.ToFolder();
+            Assert.That(sut.Value, Is.EqualTo(path));
+        }
+        
+        [Test]
+        public void ShouldReturnFalseToIsFolder()
+        {
+            var sut = "C:\\".ToFolder();
+            Assert.That(sut.IsFile, Is.False);
+            Assert.That(sut.IsFolder, Is.True);
         }
         
         [Test]
@@ -96,38 +112,21 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldReturnFolders()
         {
-            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder\\OneMoreSubfolder").CreateIfNotExists();
-            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder2\\OneMoreSubfolder2").CreateIfNotExists();
+            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder\\OneMoreSubfolder").Create();
+            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder2\\OneMoreSubfolder2").Create();
 
             var sut = AppFsFolder.CombineFolder("FolderCreationTest");
 
-            var result = sut?.GetFolders().Select(x => x.Value).ToList();
+            var result = sut?.Folders.Select(x => x.Value).ToList();
             
             Assert.That(result, Is.EquivalentTo(new []{"Subfolder", "Subfolder\\OneMoreSubfolder", "Subfolder2", "Subfolder2\\OneMoreSubfolder2"}));
         }
         
         [Test]
-        public void ShouldReturnFoldersWithoutSkips()
-        {
-            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder\\OneMoreSubfolder").CreateIfNotExists();
-            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder2\\OneMoreSubfolder2").CreateIfNotExists();
-            AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder2\\OneMoreSubfolder2\\LastOne").CreateIfNotExists();
-
-            var sut = AppFsFolder.CombineFolder("FolderCreationTest");
-
-            var result = sut?.GetFolders(true, null, new List<Regex>
-            {
-                new Regex("Subfolder2.*")
-            }).Select(x => x.Value).ToList();
-            
-            Assert.That(result, Is.EquivalentTo(new []{"Subfolder", "Subfolder\\OneMoreSubfolder"}));
-        }
-        
-        [Test]
         public void ShouldReturnFiles()
         {
-            AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder").CreateIfNotExists();
-            AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder2").CreateIfNotExists();
+            AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder").Create();
+            AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder2").Create();
             
             var sut = AppFsFolder.CombineFolder("FolderSearchingTest");
             
@@ -140,7 +139,7 @@ namespace RoseByte.SharpFiles.Tests
             File.WriteAllText(sut.CombineFolder("Subfolder\\test4.txt").ToString(), "D");
             File.WriteAllText(sut.CombineFolder("Subfolder2\\test5.txt").ToString(), "E");
 
-            var result = sut.GetFiles().Select(x => x.Value).ToList();
+            var result = sut.Files.Select(x => x.Value).ToList();
             
             Assert.That(
                 result, 
@@ -157,53 +156,21 @@ namespace RoseByte.SharpFiles.Tests
         }
         
         [Test]
-        public void ShouldReturnFilesWithoutSkips()
-        {
-            (AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder")).CreateIfNotExists();
-            (AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder2")).CreateIfNotExists();
-            
-            var sut = AppFsFolder.CombineFolder("FolderSearchingTest");
-            
-            Assert.That(sut, Is.Not.Null);
-            
-            File.WriteAllText(sut.CombineFile("test1.txt").ToString(), "A");
-            File.WriteAllText(sut.CombineFile("test2.txt").ToString(), "B");
-            
-            File.WriteAllText(sut.CombineFile("Subfolder\\test3.txt").ToString(), "C");
-            File.WriteAllText(sut.CombineFile("Subfolder\\test4.txt").ToString(), "D");
-            File.WriteAllText(sut.CombineFile("Subfolder2\\test5.txt").ToString(), "E");
-
-            var result = sut.GetFiles(true, null, new List<Regex>{new Regex(".*test3\\.txt")}).Select(x => x.Value).ToList();
-            
-            Assert.That(
-                result, 
-                Is.EquivalentTo(new []
-                {
-                    "test1.txt",
-                    "test2.txt", 
-                    "Subfolder\\test4.txt", 
-                    "Subfolder2\\test5.txt"
-                }));
-            
-            AppFsFolder.CombineFile("FolderSearchingTest").Remove();
-        }
-        
-        [Test]
         public void ShouldSyncStructures()
         {
             var donor = AppFsFolder.CombineFolder("FolderSyncingTestDonor");
             var acceptor = AppFsFolder.CombineFolder("FolderSyncingTestAcceptor");
             
-            donor.CombineFolder("Subfolder").CreateIfNotExists();
-            donor.CombineFolder("Subfolder2").CreateIfNotExists();
+            donor.CombineFolder("Subfolder").Create();
+            donor.CombineFolder("Subfolder2").Create();
             File.WriteAllText(donor.CombineFile("test1.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("test2.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("Subfolder\\test3.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("Subfolder2\\test4.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("Subfolder2\\test5.txt").ToString(), "A");
             
-            acceptor.CombineFolder("Subfolder2").CreateIfNotExists();
-            acceptor.CombineFolder("Subfolder3").CreateIfNotExists();
+            acceptor.CombineFolder("Subfolder2").Create();
+            acceptor.CombineFolder("Subfolder3").Create();
             File.WriteAllText(acceptor.CombineFile("test1.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("test3.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("Subfolder2\\test4.txt").ToString(), "A");
@@ -212,8 +179,8 @@ namespace RoseByte.SharpFiles.Tests
             
             donor.SyncStructure(acceptor);
 
-            var files = acceptor.GetFiles().Select(x => x.Value);
-            var folders = acceptor.GetFolders().Select(x => x.Value);
+            var files = acceptor.Files.Select(x => x.Value);
+            var folders = acceptor.Folders.Select(x => x.Value);
             
             Assert.That(
                 folders, 
@@ -241,30 +208,26 @@ namespace RoseByte.SharpFiles.Tests
             var donor = AppFsFolder.CombineFolder("FolderSyncingTestDonor");
             var acceptor = AppFsFolder.CombineFolder("FolderSyncingTestAcceptor");
             
-            (donor.CombineFolder("Subfolder")).CreateIfNotExists();
-            (donor.CombineFolder("Subfolder2")).CreateIfNotExists();
+            (donor.CombineFolder("Subfolder")).Create();
+            (donor.CombineFolder("Subfolder2")).Create();
             File.WriteAllText(donor.CombineFile("test1.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("test2.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("Subfolder\\test3.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("Subfolder2\\test4.txt").ToString(), "A");
             File.WriteAllText(donor.CombineFile("Subfolder2\\test5.txt").ToString(), "A");
             
-            (acceptor.CombineFolder("Subfolder2")).CreateIfNotExists();
-            (acceptor.CombineFolder("Subfolder3")).CreateIfNotExists();
+            (acceptor.CombineFolder("Subfolder2")).Create();
+            (acceptor.CombineFolder("Subfolder3")).Create();
             File.WriteAllText(acceptor.CombineFile("test1.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("test3.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("Subfolder2\\test4.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("Subfolder2\\test1.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("Subfolder3\\test5.txt").ToString(), "A");
-            
-            donor.SyncStructure(acceptor, new List<Regex>
-            {
-                new Regex(".*Subfolder3.*"), 
-                new Regex(".*test1\\.txt")
-            });
 
-            var files = acceptor.GetFiles().Select(x => x.Value);
-            var folders = acceptor.GetFolders().Select(x => x.Value);
+            donor = donor.Filter(true, new Regex(".*Subfolder3.*"), new Regex(".*test1\\.txt"));
+            
+            var files = acceptor.Files.Select(x => x.Value);
+            var folders = acceptor.Folders.Select(x => x.Value);
             
             Assert.That(folders, Is.EquivalentTo(new []
             {
@@ -290,8 +253,8 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldSkipFileStartingWithAsterisk()
         {
-            (AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder")).CreateIfNotExists();
-            (AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder2")).CreateIfNotExists();
+            (AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder")).Create();
+            (AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder2")).Create();
             
             var sut = AppFsFolder.CombineFolder("FolderSearchingTest");
             
@@ -304,8 +267,9 @@ namespace RoseByte.SharpFiles.Tests
             File.WriteAllText(sut.CombineFile("Subfolder\\test4.txt").ToString(), "D");
             File.WriteAllText(sut.CombineFile("Subfolder2\\test5.txt").ToString(), "E");
 
-            var result = sut.GetFiles(true, null, new List<Regex>{new Regex(".*test3\\.txt")})
-                .Select(x => x.Value).ToList();
+            sut = sut.Filter(true, null, new Regex(".*test3\\.txt"));
+            
+            var result = sut.Files.Select(x => x.Value).ToList();
             
             Assert.That(
                 result, 
@@ -315,38 +279,6 @@ namespace RoseByte.SharpFiles.Tests
                     "test2.txt", 
                     "Subfolder\\test4.txt", 
                     "Subfolder2\\test5.txt"
-                }));
-            
-            AppFsFolder.CombineFile("FolderSearchingTest").Remove();
-        }
-        
-        [Test]
-        public void ShouldSkipFileEndingWithAsterisk()
-        {
-            AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder").CreateIfNotExists();
-            AppFsFolder.CombineFolder("FolderSearchingTest\\Subfolder2").CreateIfNotExists();
-            
-            var sut = AppFsFolder.CombineFolder("FolderSearchingTest");
-            
-            Assert.That(sut, Is.Not.Null);
-            
-            File.WriteAllText(sut.CombineFile("test1.txt").ToString(), "A");
-            File.WriteAllText(sut.CombineFile("test2.txt").ToString(), "B");
-            
-            File.WriteAllText(sut.CombineFile("Subfolder\\test3.txt").ToString(), "C");
-            File.WriteAllText(sut.CombineFile("Subfolder\\test4.txt").ToString(), "D");
-            File.WriteAllText(sut.CombineFile("Subfolder2\\test5.txt").ToString(), "E");
-
-            var result = sut.GetFiles(true, null, new List<Regex>{new Regex("Subfolder[\\D].*")})
-                .Select(x => x.Value).ToList();
-            
-            Assert.That(
-                result, 
-                Is.EquivalentTo(new []
-                {
-                    "test1.txt",
-                    "test2.txt", 
-                    "Subfolder2\\test5.txt", 
                 }));
             
             AppFsFolder.CombineFile("FolderSearchingTest").Remove();

@@ -74,15 +74,15 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldCopySmallFile()
         {
-            var progresses = new List<int>();
+            var progresses = new List<(long, long)>();
             
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             File.WriteAllText(folder.CombineFile("test1.txt").ToString(), "ABCD");
 
             var sut = folder.CombineFile("test1.txt");
             
-            sut.Copy(folder.CombineFile("test2.txt"), x => progresses.Add(x));
+            sut.Copy(folder.CombineFile("test2.txt"), (x, y) => progresses.Add((x, y)));
             
             Assert.That(progresses.SingleOrDefault(), Is.EqualTo(100));
             
@@ -99,7 +99,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldCopySmallFileWithoutProgress()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             File.WriteAllText(folder.CombineFile("test1.txt"), "ABCD");
 
             var sut = folder.CombineFile("test1.txt");
@@ -123,7 +123,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldRemoveFile()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             File.WriteAllText(folder.CombineFile("test1.txt"), "ABCD");
 
             var sut = folder.CombineFile("test1.txt");
@@ -141,7 +141,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldGetFilesContent()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             File.WriteAllText(folder.CombineFile("test1.txt"), "ABCD");
             
             var sut = folder.CombineFile("test1.txt");
@@ -155,7 +155,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldWriteFilesContent()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             File.WriteAllText(folder.CombineFile("test1.txt"), "");
             
             var sut = folder.CombineFile("test1.txt");
@@ -171,7 +171,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldCalculateHash()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             
             var sut = folder.CombineFile("test4.txt");
             
@@ -186,7 +186,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldCalculateSize()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             
             var sut = folder.CombineFile("test5.txt");
             
@@ -201,7 +201,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldWriteFilesContentWhenFileDoesNotExist()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             
             var sut = folder.CombineFile("test3.txt");
             
@@ -216,7 +216,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldRemoveReadOnlyFile()
         {
             var folder = AppFsFolder.CombineFolder("CopyTest");
-            folder.CreateIfNotExists();
+            folder.Create();
             File.WriteAllText(folder.CombineFile("test1.txt"), "ABCD");
 
             var sut = folder.CombineFile("test1.txt");
@@ -246,12 +246,12 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldCopyLargeFile()
         {
-            var progresses = new List<int>();
+            var progresses = new List<(long, long)>();
             
             var sut = AppFsFolder.CombineFile("TestFiles\\nuget.exe");
             var target = AppFsFolder.CombineFile("TestFiles\\nuget2.exe");
             
-            sut.Copy(target, x => progresses.Add(x));
+            sut.Copy(target, (x, y) => progresses.Add((x, y)));
             
             Assert.That(progresses.Count, Is.GreaterThan(1));
             Assert.That(progresses.Last(), Is.EqualTo(100));
@@ -276,7 +276,7 @@ namespace RoseByte.SharpFiles.Tests
             var target = AppFsFolder.CombineFile("RoseByte.SharpFiles.Tests.dll");
             
             Assert.That(
-                () => sut.Copy(target, x => {}), 
+                () => sut.Copy(target, (x, y) => { }), 
                 Throws.Exception.With.Message.EqualTo($"File '{sut}' could not be copied to '{target}'"));
         }
     }

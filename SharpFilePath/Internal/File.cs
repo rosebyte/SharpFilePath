@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using RoseByte.SharpFiles.CopyFileEx;
 using RoseByte.SharpFiles.Extensions;
 
@@ -17,7 +18,7 @@ namespace RoseByte.SharpFiles.Internal
         private byte[] _hash;
         public override byte[] Hash
         {
-            get { return _hash ?? (_hash = SHA256.Create().ComputeHash(System.IO.File.ReadAllBytes(Value))); }
+            get => _hash ?? (_hash = SHA256.Create().ComputeHash(System.IO.File.ReadAllBytes(Value)));
         }
 
         private long? _size;
@@ -34,30 +35,28 @@ namespace RoseByte.SharpFiles.Internal
             }
         }
 
-
         internal File(string value) : base(value) { }
 
-        public override void Copy(FsPath target)
+        private void PrepareCopy(FsFile target)
         {
-            if (!(target is File))
+            target.Parent.Create();
+            
+            if (target.Exists && (System.IO.File.GetAttributes(Value) & FileAttributes.ReadOnly) != 0)
             {
-                throw new Exception("File can be copied only to file path, not");
-            }
-
-            target.Parent.CreateIfNotExists();
+                System.IO.File.SetAttributes(Value, FileAttributes.Normal);
+            };
+        }
+        
+        public override void Copy(FsFile target)
+        {
+            PrepareCopy(target);
             System.IO.File.Copy(Value, target, true);
         }
 	    
-        public override void Copy(FsPath target, Action<int> progress)
+        public override void Copy(FsFile target, Action<long, long> progress)
         {
-            if (!(target is File))
-            {
-                throw new Exception("File can be copied only to file path, not");
-            }
-		    
-            var prog = 0;
-		    
-            new FileEx(progress).Copy(Value, target.ToString(), ref prog);
+            PrepareCopy(target);
+            new FileEx(progress).Copy(this, target);
         }
 
         public override void Remove()
@@ -67,11 +66,19 @@ namespace RoseByte.SharpFiles.Internal
                 return;
             }
 			
-            if ((System.IO.File.GetAttributes(Value) & FileAttributes.ReadOnly) != 0)
+            try
             {
-                System.IO.File.SetAttributes(Value, FileAttributes.Normal);
-            };
-            System.IO.File.Delete(Value);
+                if ((System.IO.File.GetAttributes(Value) & FileAttributes.ReadOnly) != 0)
+                {
+                    System.IO.File.SetAttributes(Value, FileAttributes.Normal);
+                };
+                
+                System.IO.File.Delete(Value);
+            }
+            catch (Exception exception)
+            {
+                throw new Exception($"File '{Value}' could not be deleted: {exception.Message}");
+            }
         }
 
         public override FsFolder Parent => Path.GetDirectoryName(Value).ToFolder();
@@ -80,7 +87,8 @@ namespace RoseByte.SharpFiles.Internal
 
         public override void Write(string content)
         {
-            System.IO.File.WriteAllText(Value, content);
+            PrepareCopy(this);
+            System.IO.File.WriteAllText(Value, content, Encoding.UTF8);
         }
     }
 }

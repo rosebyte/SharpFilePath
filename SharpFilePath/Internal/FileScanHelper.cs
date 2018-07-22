@@ -14,20 +14,20 @@ namespace RoseByte.SharpFiles
         private readonly Regex _filter;
         private readonly Regex _skip;
 
-        public ScanHelper(FsFolder fsFolder, Regex filter, Regex skip)
+        public ScanHelper(FsFolder fsFolder, Regex filter = null, Regex skip = null)
         {
             Base = fsFolder;
             _filter = filter;
             _skip = skip;
         }
 
-        public IEnumerable<FsSubPath<FsFolder>> GetFolders(string path, bool recursive)
+        public IEnumerable<FsChild<FsFolder>> GetFolders(string path, bool recursive)
         {
             var files = Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly);
             
             foreach (var file in files)
             {
-                var subpath = new SubPath<FsFolder>(Base, new Folder(file));
+                var subpath = new FsChild<FsFolder>(Base, new Folder(file));
                 
                 if (!_filter?.IsMatch(subpath.Value) ?? false)
                 {
@@ -51,7 +51,7 @@ namespace RoseByte.SharpFiles
             }
         }
         
-        public IEnumerable<FsSubPath<FsFile>> GetFiles(string path, bool recursive)
+        public IEnumerable<FsChild<FsFile>> GetFiles(string path, bool recursive)
         {
             IEnumerable<FsFolder> folders = new []{path.ToFolder()};
 
@@ -66,7 +66,7 @@ namespace RoseByte.SharpFiles
 
                 foreach (var file in files)
                 {
-                    var subpath = new SubPath<FsFile>(Base, new File(file));
+                    var subpath = new FsChild<FsFile>(Base, new File(file));
                     
                     if (!_filter?.IsMatch(subpath.Value) ?? false)
                     {

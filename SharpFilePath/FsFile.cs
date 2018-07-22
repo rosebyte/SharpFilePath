@@ -13,5 +13,7 @@ namespace RoseByte.SharpFiles
 	    public override bool IsFolder => false;
 	    public abstract long Size { get; }
 	    public abstract byte[] Hash { get; }
+	    public abstract void Copy(FsFile target);
+	    public abstract void Copy(FsFile target, Action<long, long> progress);
     }
 }

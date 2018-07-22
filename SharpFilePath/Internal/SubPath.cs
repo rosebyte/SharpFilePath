@@ -13,6 +13,6 @@
             Value = child.ToString().Substring(parent.ToString().Length + 1);
         }
 
-        public override void Copy(FsFolder fsFolder) => Child.Copy(fsFolder.CombineFile(Value));
+        //public override void Copy(FsFolder fsFolder) => Child.Copy(fsFolder.CombineFile(Value));
     }
 }
