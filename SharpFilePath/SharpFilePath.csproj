@@ -48,7 +48,6 @@
     <Compile Include="Internal\CopyFileEx\FileEx.cs" />
     <Compile Include="Internal\Extensions\StringExtensions.cs" />
     <Compile Include="Internal\File.cs" />
-    <Compile Include="Internal\FileScanHelper.cs" />
     <Compile Include="Internal\FilteredFolder.cs" />
     <Compile Include="Internal\Folder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

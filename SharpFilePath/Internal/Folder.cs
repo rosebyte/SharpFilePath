@@ -17,14 +17,56 @@ namespace RoseByte.SharpFiles.Internal
         public override FsFile CombineFile(string pathPart) => new File(Path.Combine(this, pathPart));       
         public override FsFolder CombineFolder(string pathPart) => new Folder(Path.Combine(Value, pathPart));
         public override FsFolder Parent => new Folder(Directory.GetParent(Value).FullName);
-        public override IEnumerable<FsChild<FsFile>> Files => new ScanHelper(this).GetFiles(Value, true);
-        public override IEnumerable<FsChild<FsFolder>> Folders => new ScanHelper(this).GetFolders(Value, true);
+        public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Value, true);
+        public override IEnumerable<FsChild<FsFolder>> Folders => GetFolders(Value, true);
 
         public override FsFolder Filter(bool recursive, Regex filter, Regex skip)
         {
             return new FilteredFolder(this, recursive, filter, skip);
         }
+        
+        private IEnumerable<FsChild<FsFile>> GetFiles(string path, bool recursive)
+        {
+            IEnumerable<FsFolder> folders = new []{path.ToFolder()};
 
+            if (recursive)
+            {
+                folders = folders.Union(GetFolders(path, true).Select(x => x.Child));
+            }
+
+            foreach (var folder in folders)
+            {
+                var files = Directory.EnumerateFiles(folder, "*", SearchOption.TopDirectoryOnly);
+
+                foreach (var file in files)
+                {
+                    var subpath = new FsChild<FsFile>(this, new File(file));
+                    
+                    yield return subpath;
+                }
+            }
+        }
+        
+        private IEnumerable<FsChild<FsFolder>> GetFolders(string path, bool recursive)
+        {
+            var files = Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly);
+            
+            foreach (var file in files)
+            {
+                var subpath = new FsChild<FsFolder>(this, new Folder(file));
+                
+                yield return subpath;
+
+                if (recursive)
+                {
+                    foreach (var subFolder in GetFolders(subpath.Child, true))
+                    {
+                        yield return subFolder;
+                    }
+                }
+            }
+        }
+        
         public void Copy(FsChild<FsFile> child) => child.Child.Copy(CombineFile(child.Value));
         public void Create(FsChild<FsFolder> child) => CombineFolder(child.Value).Create();
         
