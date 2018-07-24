@@ -5,12 +5,12 @@ using RoseByte.SharpFiles.Internal;
 namespace RoseByte.SharpFiles.Tests
 {
     [TestFixture]
-    public class SubPathTests
+    public class FsChildTests
     {
         [Test]
         public void ShouldCreateInstance()
         {
-            var sut = new SubPath<FsFolder>("C:".ToFolder(), "C:\\SomeFolder".ToFolder());
+            var sut = new FsChild<FsFolder>("C:".ToFolder(), "C:\\SomeFolder".ToFolder());
             
             Assert.That(sut.Child.ToString(), Is.EqualTo("C:\\SomeFolder"));
             Assert.That(sut.Parent.ToString(), Is.EqualTo("C:"));

@@ -51,8 +51,6 @@
     <Compile Include="Internal\FileScanHelper.cs" />
     <Compile Include="Internal\FilteredFolder.cs" />
     <Compile Include="Internal\Folder.cs" />
-    <Compile Include="Internal\FsSubPath.cs" />
-    <Compile Include="Internal\SubPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

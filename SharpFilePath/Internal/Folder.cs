@@ -13,6 +13,7 @@ namespace RoseByte.SharpFiles.Internal
         internal Folder(string value) : base(value) { }
         
         public override bool Exists => Directory.Exists(Value);
+        protected override long GetSize() => Files.Sum(x => x.Child.Size);
         public override FsFile CombineFile(string pathPart) => new File(Path.Combine(this, pathPart));       
         public override FsFolder CombineFolder(string pathPart) => new Folder(Path.Combine(Value, pathPart));
         public override FsFolder Parent => new Folder(Directory.GetParent(Value).FullName);

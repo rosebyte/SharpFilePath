@@ -21,20 +21,9 @@ namespace RoseByte.SharpFiles.Internal
             get => _hash ?? (_hash = SHA256.Create().ComputeHash(System.IO.File.ReadAllBytes(Value)));
         }
 
-        private long? _size;
-        public override long Size
-        {
-            get
-            {
-                if (!_size.HasValue)
-                {
-                    _size = new FileInfo(Value).Length;
-                }
-
-                return _size.Value;
-            }
-        }
-
+        private long? _sizeCache;
+        protected override long GetSize() => new FileInfo(Value).Length;
+        
         internal File(string value) : base(value) { }
 
         private void PrepareCopy(FsFile target)
@@ -49,8 +38,15 @@ namespace RoseByte.SharpFiles.Internal
         
         public override void Copy(FsFile target)
         {
-            PrepareCopy(target);
-            System.IO.File.Copy(Value, target, true);
+            try
+            {
+                PrepareCopy(target);
+                System.IO.File.Copy(Value, target, true);
+            }
+            catch (Exception exception)
+            {
+                throw new Exception($"File '{Value}' could not be copied to '{target}': {exception.Message}");
+            }
         }
 	    
         public override void Copy(FsFile target, Action<long, long> progress)
