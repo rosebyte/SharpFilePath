@@ -10,7 +10,7 @@
         {
             Parent = parent;
             Child = child;
-            Value = child.Value.Substring(parent.Value.Length + 1);
+            Value = child.Value.Substring(parent.Value.Length ).Trim('\\', '/');
         }
         
         public bool IsFile => Child.IsFile;

@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Internal\CopyFileEx\FileExTests.cs" />
     <Compile Include="Internal\FileTests.cs" />
+    <Compile Include="Internal\FilteredFolderTests.cs" />
     <Compile Include="Internal\FolderTests.cs" />
     <Compile Include="Internal\FsChildTests.cs" />
     <Compile Include="FsPathTests.cs" />
