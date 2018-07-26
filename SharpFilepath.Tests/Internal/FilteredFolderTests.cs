@@ -1,5 +1,7 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using RoseByte.SharpFiles.Extensions;
 
@@ -54,6 +56,45 @@ namespace RoseByte.SharpFiles.Tests
         
         [OneTimeTearDown]
         public void TearDown() => _folder.Remove();
+
+        [Test]
+        public void ShouldReturnAllFiles()
+        {
+            var sut = _folder.Filter(true, null, null, null, null);
+            
+            Assert.That(
+                sut.Files.Count(), 
+                Is.EqualTo(Directory.EnumerateFiles(_folder, "*", SearchOption.AllDirectories).Count()));
+        }
         
+        [Test]
+        public void ShouldReturnAllFolders()
+        {
+            var sut = _folder.Filter(true, null, null, null, null);
+            
+            Assert.That(
+                sut.Folders.Count(), 
+                Is.EqualTo(Directory.EnumerateDirectories(_folder, "*", SearchOption.AllDirectories).Count()));
+        }
+
+        [Test]
+        public void ShouldFilterToFilesEndingWIthOne()
+        {
+            var sut = _folder.Filter(true, null, null, new Regex(".*1\\.txt"), null);
+
+            var result = sut.Files;
+            
+            Assert.That(result.Count(), Is.EqualTo(7));
+        }
+        
+        [Test]
+        public void ShouldSkipFilesEndingWithOne()
+        {
+            var sut = _folder.Filter(true, null, null, null, new Regex(".*1\\.txt"));
+
+            var result = sut.Files;
+            
+            Assert.That(result.Count(), Is.EqualTo(7));
+        }
     }
 }

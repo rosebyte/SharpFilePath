@@ -22,7 +22,7 @@ namespace RoseByte.SharpFiles.Tests.TestFiles
 
             var sut = AppFsFolder.CombineFolder("FolderCreationTest");
 
-            sut = sut.Filter(true, null, new Regex("Subfolder2.*"));
+            sut = sut.Filter(true, null, new Regex("Subfolder2.*"), null, null);
 
             var result = sut?.Folders.Select(x => x.Value).ToList();
             
@@ -46,7 +46,7 @@ namespace RoseByte.SharpFiles.Tests.TestFiles
             File.WriteAllText(sut.CombineFile("Subfolder\\test4.txt").ToString(), "D");
             File.WriteAllText(sut.CombineFile("Subfolder2\\test5.txt").ToString(), "E");
 
-            sut = sut.Filter(true, null, new Regex(".*test3\\.txt"));
+            sut = sut.Filter(true, null, new Regex(".*test3\\.txt"), null, null);
             
             var result = sut.Files.Select(x => x.Value).ToList();
             

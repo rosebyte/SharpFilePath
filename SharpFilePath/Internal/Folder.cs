@@ -17,22 +17,18 @@ namespace RoseByte.SharpFiles.Internal
         public override FsFile CombineFile(string pathPart) => new File(Path.Combine(this, pathPart));       
         public override FsFolder CombineFolder(string pathPart) => new Folder(Path.Combine(Value, pathPart));
         public override FsFolder Parent => new Folder(Directory.GetParent(Value).FullName);
-        public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Value, true);
-        public override IEnumerable<FsChild<FsFolder>> Folders => GetFolders(Value, true);
+        public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Value);
+        public override IEnumerable<FsChild<FsFolder>> Folders => GetFolders(Value);
 
-        public override FsFolder Filter(bool recursive, Regex filter, Regex skip)
+        public override FsFolder Filter(bool recursive, Regex filterFolders, Regex skipFolders, Regex filterFiles, 
+            Regex skipFiles)
         {
-            return new FilteredFolder(this, recursive, filter, skip);
+            return new FilteredFolder(this, recursive, filterFolders, skipFolders, filterFiles, skipFiles);
         }
         
-        private IEnumerable<FsChild<FsFile>> GetFiles(string path, bool recursive)
+        private IEnumerable<FsChild<FsFile>> GetFiles(string path)
         {
-            IEnumerable<FsFolder> folders = new []{path.ToFolder()};
-
-            if (recursive)
-            {
-                folders = folders.Union(GetFolders(path, true).Select(x => x.Child));
-            }
+            var folders = new []{path.ToFolder()}.Union(GetFolders(path).Select(x => x.Child));
 
             foreach (var folder in folders)
             {
@@ -47,7 +43,7 @@ namespace RoseByte.SharpFiles.Internal
             }
         }
         
-        private IEnumerable<FsChild<FsFolder>> GetFolders(string path, bool recursive)
+        private IEnumerable<FsChild<FsFolder>> GetFolders(string path)
         {
             var files = Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly);
             
@@ -57,12 +53,9 @@ namespace RoseByte.SharpFiles.Internal
                 
                 yield return subpath;
 
-                if (recursive)
+                foreach (var subFolder in GetFolders(subpath.Child))
                 {
-                    foreach (var subFolder in GetFolders(subpath.Child, true))
-                    {
-                        yield return subFolder;
-                    }
+                    yield return subFolder;
                 }
             }
         }

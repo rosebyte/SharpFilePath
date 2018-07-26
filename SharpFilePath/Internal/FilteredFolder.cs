@@ -9,14 +9,19 @@ namespace RoseByte.SharpFiles.Internal
     public class FilteredFolder : Folder
     {
         public bool Recursive { get; }
-        public Regex Filter { get; }
-        public Regex Skip { get; }
+        public Regex FilterFiles { get; }
+        public Regex SkipFiles { get; }
+        public Regex FilterFolders { get; }
+        public Regex SkipFolders { get; }
 
-        internal FilteredFolder(string value, bool recursive, Regex filter, Regex skip) : base(value)
+        internal FilteredFolder(string value, bool recursive, Regex filterFolders, Regex skipFolders, Regex filterFiles,
+            Regex skipFiles) : base(value)
         {
             Recursive = recursive;
-            Filter = filter;
-            Skip = skip;
+            FilterFiles = filterFiles;
+            FilterFolders = filterFolders;
+            SkipFiles = skipFiles;
+            SkipFolders = skipFolders;
         }
         
         public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Value, Recursive);
@@ -31,12 +36,12 @@ namespace RoseByte.SharpFiles.Internal
             {
                 var subpath = new FsChild<FsFolder>(this, new Folder(file));
                 
-                if (!Filter?.IsMatch(subpath.Value) ?? false)
+                if (!FilterFolders?.IsMatch(subpath.Value) ?? false)
                 {
                     continue;
                 }
                 
-                if (Skip?.IsMatch(subpath.Value) ?? false)
+                if (SkipFolders?.IsMatch(subpath.Value) ?? false)
                 {
                     continue;
                 }
@@ -70,12 +75,12 @@ namespace RoseByte.SharpFiles.Internal
                 {
                     var subpath = new FsChild<FsFile>(this, new File(file));
                     
-                    if (!Filter?.IsMatch(subpath.Value) ?? false)
+                    if (!FilterFiles?.IsMatch(subpath.Value) ?? false)
                     {
                         continue;
                     }
                 
-                    if (Skip?.IsMatch(subpath.Value) ?? false)
+                    if (SkipFiles?.IsMatch(subpath.Value) ?? false)
                     {
                         continue;
                     }

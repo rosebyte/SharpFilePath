@@ -224,7 +224,7 @@ namespace RoseByte.SharpFiles.Tests
             File.WriteAllText(acceptor.CombineFile("Subfolder2\\test1.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("Subfolder3\\test5.txt").ToString(), "A");
 
-            donor = donor.Filter(true, new Regex(".*Subfolder3.*"), new Regex(".*test1\\.txt"));
+            donor = donor.Filter(true, new Regex(".*Subfolder3.*"), new Regex(".*test1\\.txt"), null, null);
             
             var files = acceptor.Files.Select(x => x.Value);
             var folders = acceptor.Folders.Select(x => x.Value);
@@ -267,7 +267,7 @@ namespace RoseByte.SharpFiles.Tests
             File.WriteAllText(sut.CombineFile("Subfolder\\test4.txt").ToString(), "D");
             File.WriteAllText(sut.CombineFile("Subfolder2\\test5.txt").ToString(), "E");
 
-            sut = sut.Filter(true, null, new Regex(".*test3\\.txt"));
+            sut = sut.Filter(true, null, new Regex(".*test3\\.txt"), null, null);
             
             var result = sut.Files.Select(x => x.Value).ToList();
             
