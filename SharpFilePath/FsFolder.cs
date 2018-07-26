@@ -15,7 +15,19 @@ namespace RoseByte.SharpFiles
         public abstract void SyncStructure(FsFolder destination);
         public abstract IEnumerable<FsChild<FsFile>> Files { get; }
         public abstract IEnumerable<FsChild<FsFolder>> Folders { get; }
-        public abstract FsFolder Filter(bool recursive, Regex filterFolders, Regex skipFolders, Regex filterFiles, 
-            Regex skipFiles);
+        public abstract bool Recursive { get; }
+        public abstract Regex FilesFilter { get; }
+        public abstract Regex FilesSkip { get; }
+        public abstract Regex FoldersFilter { get; }
+        public abstract Regex FoldersSkip { get; }
+        public abstract FsFolder SetFileSkip(Regex rgx);
+        public abstract FsFolder SetFileFilter(Regex rgx);
+        public abstract FsFolder SetFolderSkip(Regex rgx);
+        public abstract FsFolder SetFolderFilter(Regex rgx);
+        public abstract FsFolder SetRecursivity(bool recursivity);
+        public abstract void Copy(FsChild<FsFile> child);
+        public abstract void Create(FsChild<FsFolder> child);
+        public abstract void Remove(FsChild<FsFolder> child);
+        public abstract void Remove(FsChild<FsFile> child);
     }
 }

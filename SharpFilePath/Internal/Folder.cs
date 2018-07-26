@@ -11,24 +11,65 @@ namespace RoseByte.SharpFiles.Internal
     public class Folder : FsFolder
     {
         internal Folder(string value) : base(value) { }
+
+        private Folder(string value, bool resursive, Regex filterFolders, Regex skipFolders, Regex filterFiles,
+            Regex skipFiles) : base(value)
+        {
+            Recursive = resursive;
+            FilesFilter = filterFiles;
+            FoldersFilter = filterFolders;
+            FilesSkip = skipFiles;
+            FoldersSkip = skipFolders;
+        }
+
+        public override bool Recursive { get; } = true;
+        public override Regex FilesFilter { get; }
+        public override Regex FilesSkip { get; }
+        public override Regex FoldersFilter { get; }
+        public override Regex FoldersSkip { get; }
+
+        public override FsFolder SetFileSkip(Regex rgx)
+        {
+            return new Folder(this, Recursive, FoldersFilter, FoldersSkip, FilesFilter, rgx);
+        }
+        
+        public override FsFolder SetFileFilter(Regex rgx)
+        {
+            return new Folder(this, Recursive, FoldersFilter, FoldersSkip, rgx, FilesSkip);
+        }
+        
+        public override FsFolder SetFolderSkip(Regex rgx)
+        {
+            return new Folder(this, Recursive, FoldersFilter, rgx, FilesFilter, FilesSkip);
+        }
+        
+        public override FsFolder SetFolderFilter(Regex rgx)
+        {
+            return new Folder(this, Recursive, rgx, FoldersSkip, FilesFilter, FilesSkip);
+        }
+        
+        public override FsFolder SetRecursivity(bool recursivity)
+        {
+            return new Folder(this, recursivity, FoldersFilter, FoldersSkip, FilesFilter, FilesSkip);
+        }
         
         public override bool Exists => Directory.Exists(Value);
         protected override long GetSize() => Files.Sum(x => x.Child.Size);
+        
         public override FsFile CombineFile(string pathPart) => new File(Path.Combine(this, pathPart));       
         public override FsFolder CombineFolder(string pathPart) => new Folder(Path.Combine(Value, pathPart));
         public override FsFolder Parent => new Folder(Directory.GetParent(Value).FullName);
         public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Value);
         public override IEnumerable<FsChild<FsFolder>> Folders => GetFolders(Value);
 
-        public override FsFolder Filter(bool recursive, Regex filterFolders, Regex skipFolders, Regex filterFiles, 
-            Regex skipFiles)
-        {
-            return new FilteredFolder(this, recursive, filterFolders, skipFolders, filterFiles, skipFiles);
-        }
-        
         private IEnumerable<FsChild<FsFile>> GetFiles(string path)
         {
-            var folders = new []{path.ToFolder()}.Union(GetFolders(path).Select(x => x.Child));
+            IEnumerable<FsFolder> folders = new []{path.ToFolder()};
+
+            if (Recursive)
+            {
+                folders = folders.Union(GetFolders(path).Select(x => x.Child));
+            }
 
             foreach (var folder in folders)
             {
@@ -38,6 +79,16 @@ namespace RoseByte.SharpFiles.Internal
                 {
                     var subpath = new FsChild<FsFile>(this, new File(file));
                     
+                    if (!FilesFilter?.IsMatch(subpath.Value) ?? false)
+                    {
+                        continue;
+                    }
+                
+                    if (FilesSkip?.IsMatch(subpath.Value) ?? false)
+                    {
+                        continue;
+                    }
+                
                     yield return subpath;
                 }
             }
@@ -51,17 +102,32 @@ namespace RoseByte.SharpFiles.Internal
             {
                 var subpath = new FsChild<FsFolder>(this, new Folder(file));
                 
+                if (!FoldersFilter?.IsMatch(subpath.Value) ?? false)
+                {
+                    continue;
+                }
+                
+                if (FoldersSkip?.IsMatch(subpath.Value) ?? false)
+                {
+                    continue;
+                }
+                
                 yield return subpath;
 
-                foreach (var subFolder in GetFolders(subpath.Child))
+                if (Recursive)
                 {
-                    yield return subFolder;
+                    foreach (var subFolder in GetFolders(subpath.Child))
+                    {
+                        yield return subFolder;
+                    }
                 }
             }
         }
         
-        public void Copy(FsChild<FsFile> child) => child.Child.Copy(CombineFile(child.Value));
-        public void Create(FsChild<FsFolder> child) => CombineFolder(child.Value).Create();
+        public override void Copy(FsChild<FsFile> child) => child.Child.Copy(CombineFile(child.Value));
+        public override void Create(FsChild<FsFolder> child) => CombineFolder(child.Value).Create();
+        public override void Remove(FsChild<FsFolder> child) => CombineFolder(child.Value).Remove();
+        public override void Remove(FsChild<FsFile> child) => CombineFile(child.Value).Remove();
         
         public override void SyncStructure(FsFolder destination)
         {
