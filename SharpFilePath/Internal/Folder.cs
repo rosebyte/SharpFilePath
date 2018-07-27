@@ -129,7 +129,7 @@ namespace RoseByte.SharpFiles.Internal
         public override void Remove(FsChild<FsFolder> child) => CombineFolder(child.Value).Remove();
         public override void Remove(FsChild<FsFile> child) => CombineFile(child.Value).Remove();
         
-        public override void SyncStructure(FsFolder destination)
+        public override void SyncStructure(FsFolder destination, bool force)
         {
             var folders = Folders.ToList();
             var destFolders = destination.Folders.ToList();

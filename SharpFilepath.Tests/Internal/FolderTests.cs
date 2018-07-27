@@ -97,7 +97,7 @@ namespace RoseByte.SharpFiles.Tests
 
             var result = sut.Files;
             
-            Assert.That(result.Count(), Is.EqualTo(8));
+            Assert.That(result.Count(), Is.EqualTo(7));
         }
 
         [Test]
@@ -271,7 +271,7 @@ namespace RoseByte.SharpFiles.Tests
             File.WriteAllText(acceptor.CombineFile("Subfolder2\\test1.txt").ToString(), "A");
             File.WriteAllText(acceptor.CombineFile("Subfolder3\\test5.txt").ToString(), "A");
             
-            donor.SyncStructure(acceptor);
+            donor.SyncStructure(acceptor, true);
 
             var files = acceptor.Files.Select(x => x.Value);
             var folders = acceptor.Folders.Select(x => x.Value);

@@ -12,7 +12,7 @@ namespace RoseByte.SharpFiles
         public abstract void Create();
         public override bool IsFile => false;
         public override bool IsFolder => true;
-        public abstract void SyncStructure(FsFolder destination);
+        public abstract void SyncStructure(FsFolder destination, bool force);
         public abstract IEnumerable<FsChild<FsFile>> Files { get; }
         public abstract IEnumerable<FsChild<FsFolder>> Folders { get; }
         public abstract bool Recursive { get; }

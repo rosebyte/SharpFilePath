@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using NUnit.Framework;
 using RoseByte.SharpFiles.Extensions;
 
@@ -34,6 +35,24 @@ namespace RoseByte.SharpFiles.Tests
             var path = "C:\\test.txt";
             var sut = path.ToFile();
             Assert.That(sut.Value, Is.EqualTo(path));
+        }
+
+        [Test]
+        public void ShouldReturnEncoding()
+        {
+            var sut = _folder.CombineFile(nameof(ShouldReturnEncoding));
+            
+            sut.Write("A");
+            
+            Assert.That(sut.Encoding, Is.EqualTo(Encoding.UTF8));
+        }
+        
+        [Test]
+        public void ShouldTestEncoding()
+        {
+            var sut = _folder.CombineFile(nameof(ShouldTestEncoding));
+            sut.Write("A");
+            Assert.That(sut.HasEncoding(Encoding.UTF8), Is.True);
         }
         
         [Test]
@@ -202,7 +221,8 @@ namespace RoseByte.SharpFiles.Tests
             
             Assert.That(
                 () => target.Remove(), 
-                Throws.Exception.With.Message.StartsWith($"File '{target}' could not be deleted: "));
+                Throws.Exception.With.Message.StartsWith(
+                    $"File '{target}' is locked by: JetBrains.ReSharper.TaskRunner.CLR45.x64 "));
         }
         
         [Test]

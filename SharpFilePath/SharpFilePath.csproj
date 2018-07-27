@@ -42,6 +42,7 @@
     <Compile Include="FsFile.cs" />
     <Compile Include="FsPath.cs" />
     <Compile Include="FsFolder.cs" />
+    <Compile Include="Helpers\FileUtil.cs" />
     <Compile Include="Internal\CopyFileEx\CopyFileFlags.cs" />
     <Compile Include="Internal\CopyFileEx\CopyProgressCallbackReason.cs" />
     <Compile Include="Internal\CopyFileEx\CopyProgressResult.cs" />
@@ -52,7 +53,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Helpers\handle.exe" />
+    <Content Include="Helpers\handle.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
