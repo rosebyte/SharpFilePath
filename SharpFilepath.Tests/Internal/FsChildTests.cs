@@ -15,8 +15,8 @@ namespace RoseByte.SharpFiles.Tests
             var sut = new FsChild<FsFolder>("C:\\".ToFolder(), "C:\\SomeFolder".ToFolder());
             
             Assert.That(sut.Child.ToString(), Is.EqualTo("C:\\SomeFolder"));
-            Assert.That(sut.Parent.ToString(), Is.EqualTo("C:\\"));
-            Assert.That(sut.Value, Is.EqualTo("SomeFolder"));
+            Assert.That(sut.Parent.ToString(), Is.EqualTo("C:"));
+            Assert.That(sut.SubPath, Is.EqualTo("SomeFolder"));
         }
 
         [Test]

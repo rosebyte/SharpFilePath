@@ -71,6 +71,15 @@ namespace RoseByte.SharpFiles.Tests
         }
         
         [Test]
+        public void ShouldReturnFirstLevelFiles()
+        {
+            var sut = _folder.SetRecursivity(false);
+            
+            Assert.That(sut.Recursive, Is.False);
+            Assert.That(sut.Files.Count(), Is.EqualTo(2));
+        }
+        
+        [Test]
         public void ShouldReturnAllFolders()
         {
             var sut = _folder;
@@ -79,24 +88,61 @@ namespace RoseByte.SharpFiles.Tests
                 sut.Folders.Count(), 
                 Is.EqualTo(Directory.EnumerateDirectories(_folder, "*", SearchOption.AllDirectories).Count()));
         }
+        
+        [Test]
+        public void ShouldReturnFirstLevelFolders()
+        {
+            var sut = _folder.SetRecursivity(false);
+            
+            Assert.That(sut.Recursive, Is.False);
+            Assert.That(sut.Folders.Count(), Is.EqualTo(2));
+        }
 
         [Test]
         public void ShouldFilterToFilesEndingWIthOne()
         {
-            var sut = _folder.SetRecursivity(true).SetFileFilter(new Regex(".*1\\.txt"));
+            var rgx = new Regex(".*1\\.txt");
+            var sut = _folder.SetRecursivity(true).SetFileFilter(rgx);
 
             var result = sut.Files;
             
+            Assert.That(sut.FilesFilter, Is.EqualTo(result));
             Assert.That(result.Count(), Is.EqualTo(7));
+        }
+        
+        [Test]
+        public void ShouldFilterToFoldersEndingWIthOne()
+        {
+            var rgx = new Regex(".*1$");
+            var sut = _folder.SetRecursivity(true).SetFolderFilter(rgx);
+
+            var result = sut.Folders;
+            
+            Assert.That(sut.FoldersFilter, Is.EqualTo(result));
+            Assert.That(result.Count(), Is.EqualTo(3));
         }
         
         [Test]
         public void ShouldSkipFilesEndingWithOne()
         {
-            var sut = _folder.SetRecursivity(true).SetFileSkip(new Regex(".*1\\.txt"));
+            var rgx = new Regex(".*1\\.txt");
+            var sut = _folder.SetRecursivity(true).SetFileSkip(rgx);
 
             var result = sut.Files;
             
+            Assert.That(sut.FilesSkip, Is.EqualTo(result));
+            Assert.That(result.Count(), Is.EqualTo(7));
+        }
+        
+        [Test]
+        public void ShouldSkipFoldersEndingWithOne()
+        {
+            var rgx = new Regex(".*1$");
+            var sut = _folder.SetRecursivity(true).SetFolderSkip(rgx);
+
+            var result = sut.Folders;
+            
+            Assert.That(sut.FoldersSkip, Is.EqualTo(result));
             Assert.That(result.Count(), Is.EqualTo(7));
         }
 
@@ -118,7 +164,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var path = "C:\\";
             var sut = path.ToFolder();
-            Assert.That(sut.Value, Is.EqualTo(path));
+            Assert.That(sut.Path, Is.EqualTo("C:"));
         }
         
         [Test]
@@ -233,7 +279,7 @@ namespace RoseByte.SharpFiles.Tests
             Assert.That(_folder.CombineFolder(value).Exists, Is.False);
             var subFile = new FsChild<FsFolder>(_folder, _folder.CombineFolder(value));
             _folder.Create(subFile);
-            Assert.That(_folder.CombineFolder(subFile.Value).Exists, Is.True);
+            Assert.That(_folder.CombineFolder(subFile.SubPath).Exists, Is.True);
             _folder.CombineFolder(nameof(ShouldCreateSubFolder)).Remove();
         }
 
@@ -273,8 +319,8 @@ namespace RoseByte.SharpFiles.Tests
             
             donor.SyncStructure(acceptor, true);
 
-            var files = acceptor.Files.Select(x => x.Value);
-            var folders = acceptor.Folders.Select(x => x.Value);
+            var files = acceptor.Files.Select(x => x.SubPath);
+            var folders = acceptor.Folders.Select(x => x.SubPath);
             
             Assert.That(
                 folders, 

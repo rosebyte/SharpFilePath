@@ -39,7 +39,7 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldImplicitlyConvertToString()
         {
-            Assert.That(string.Equals("C:\\".ToPath(), "C:\\"), Is.True);
+            Assert.That(string.Equals("C:\\".ToPath(), "C:"), Is.True);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var sut = "C:\\".ToPath();
             
-            Assert.That(sut.ToString(), Is.EqualTo("C:\\"));
+            Assert.That(sut.ToString(), Is.EqualTo("C:"));
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var sut = "C:\\".ToPath();
             
-            Assert.That(sut.GetHashCode(), Is.EqualTo("C:\\".GetHashCode()));
+            Assert.That(sut.GetHashCode(), Is.EqualTo("C:".GetHashCode()));
         }
     }
 }

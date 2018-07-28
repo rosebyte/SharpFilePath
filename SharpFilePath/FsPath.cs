@@ -6,28 +6,12 @@ namespace RoseByte.SharpFiles
 {
 	public abstract class FsPath
 	{
-		public readonly string Value;
+		public string Path { get; }
 
-		protected FsPath(string value)
-		{
-			Value = value;
-		}
+		protected FsPath(string value) => Path = value.TrimEnd('/', '\\');
 		
 		private long? _size;
-		public long Size
-		{
-			get
-			{
-				if (_size == null)
-				{
-					_size = GetSize();
-				}
-
-				return _size.Value;
-			}
-
-			protected set => _size = value;
-		}
+		public long Size => _size ?? (_size = GetSize()).Value;
 		
 		public abstract bool IsFile { get; }
 		public abstract bool IsFolder { get; }
@@ -35,14 +19,14 @@ namespace RoseByte.SharpFiles
 		public abstract bool Exists { get; }
 		public abstract void Remove();
 		protected abstract long GetSize();
-		public void RefreshSize() => _size = GetSize();
+		public void RefreshSize() => _size = null;
 		
-		public static implicit operator string(FsPath input) => input.Value;
-		public override string ToString() => Value;
-		public override int GetHashCode() => Value != null ? Value.GetHashCode() : 0;
+		public static implicit operator string(FsPath input) => input.Path;
+		public override string ToString() => Path;
+		public override int GetHashCode() => Path != null ? Path.GetHashCode() : 0;
 		
-		public override bool Equals(object obj) => (obj is string str && str == Value) || Equals(obj as FsPath);
-		public bool Equals(FsPath other) => !ReferenceEquals(other, null) && string.Equals(Value, other.Value);
+		public override bool Equals(object obj) => (obj is string str && str == Path) || Equals(obj as FsPath);
+		public bool Equals(FsPath other) => !ReferenceEquals(other, null) && string.Equals(Path, other.Path);
 	    public static bool operator ==(FsPath left, FsPath right) => left?.Equals(right) ?? right == null;
 		public static bool operator !=(FsPath left, FsPath right) => !(left == right);
 	}

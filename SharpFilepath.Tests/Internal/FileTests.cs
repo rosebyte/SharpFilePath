@@ -34,7 +34,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var path = "C:\\test.txt";
             var sut = path.ToFile();
-            Assert.That(sut.Value, Is.EqualTo(path));
+            Assert.That(sut.Path, Is.EqualTo(path));
         }
 
         [Test]
@@ -119,6 +119,26 @@ namespace RoseByte.SharpFiles.Tests
         }
         
         [Test]
+        public void ShouldCopySmallFileWithProgress()
+        {
+            var sut = _folder.CombineFile("ShouldCopySmallFileWithoutProgress_1.txt");
+            
+            File.WriteAllText(sut, "ABCD");
+
+            var file = _folder.CombineFile("ShouldCopySmallFileWithoutProgress_2.txt");
+
+            Assert.That(File.Exists(sut));
+            
+            var progresses = new List<int>();
+            
+            sut.Copy(file, i => progresses.Add(i));
+            
+            Assert.That(File.Exists(file));
+            Assert.That(sut.Content, Is.EqualTo(file.Content));
+            Assert.That(progresses.SingleOrDefault(), Is.EqualTo(100));
+        }
+        
+        [Test]
         public void ShouldRemoveFile()
         {
             var sut = _folder.CombineFile("ShouldRemoveFile_1.txt");
@@ -186,6 +206,24 @@ namespace RoseByte.SharpFiles.Tests
             Assert.That(sut.Size, Is.EqualTo(message.Length * 2));
             
             folder.Remove();
+        }
+        
+        [Test]
+        public void ShouldRecalculateSize()
+        {
+            var message = "111";
+            
+            var sut = _folder.CombineFile(nameof(ShouldRecalculateSize));
+            
+            sut.Write(message);
+            
+            Assert.That(sut.Size, Is.EqualTo(message.Length * 2));
+            
+            sut.Write(message + message);
+            
+            sut.RefreshSize();
+            
+            Assert.That(sut.Size, Is.EqualTo(message.Length * 3));
         }
         
         [Test]

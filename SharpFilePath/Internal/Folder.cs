@@ -53,14 +53,14 @@ namespace RoseByte.SharpFiles.Internal
             return new Folder(this, recursivity, FoldersFilter, FoldersSkip, FilesFilter, FilesSkip);
         }
         
-        public override bool Exists => Directory.Exists(Value);
+        public override bool Exists => Directory.Exists(Path);
         protected override long GetSize() => Files.Sum(x => x.Child.Size);
         
-        public override FsFile CombineFile(string pathPart) => new File(Path.Combine(this, pathPart));       
-        public override FsFolder CombineFolder(string pathPart) => new Folder(Path.Combine(Value, pathPart));
-        public override FsFolder Parent => new Folder(Directory.GetParent(Value).FullName);
-        public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Value);
-        public override IEnumerable<FsChild<FsFolder>> Folders => GetFolders(Value);
+        public override FsFile CombineFile(string pathPart) => new File(System.IO.Path.Combine(this, pathPart));       
+        public override FsFolder CombineFolder(string pathPart) => new Folder(System.IO.Path.Combine(Path, pathPart));
+        public override FsFolder Parent => new Folder(Directory.GetParent(Path).FullName);
+        public override IEnumerable<FsChild<FsFile>> Files => GetFiles(Path);
+        public override IEnumerable<FsChild<FsFolder>> Folders => GetFolders(Path);
 
         private IEnumerable<FsChild<FsFile>> GetFiles(string path)
         {
@@ -79,12 +79,12 @@ namespace RoseByte.SharpFiles.Internal
                 {
                     var subpath = new FsChild<FsFile>(this, new File(file));
                     
-                    if (!FilesFilter?.IsMatch(subpath.Value) ?? false)
+                    if (!FilesFilter?.IsMatch(subpath.SubPath) ?? false)
                     {
                         continue;
                     }
                 
-                    if (FilesSkip?.IsMatch(subpath.Value) ?? false)
+                    if (FilesSkip?.IsMatch(subpath.SubPath) ?? false)
                     {
                         continue;
                     }
@@ -102,12 +102,12 @@ namespace RoseByte.SharpFiles.Internal
             {
                 var subpath = new FsChild<FsFolder>(this, new Folder(file));
                 
-                if (!FoldersFilter?.IsMatch(subpath.Value) ?? false)
+                if (!FoldersFilter?.IsMatch(subpath.SubPath) ?? false)
                 {
                     continue;
                 }
                 
-                if (FoldersSkip?.IsMatch(subpath.Value) ?? false)
+                if (FoldersSkip?.IsMatch(subpath.SubPath) ?? false)
                 {
                     continue;
                 }
@@ -124,10 +124,10 @@ namespace RoseByte.SharpFiles.Internal
             }
         }
         
-        public override void Copy(FsChild<FsFile> child) => child.Child.Copy(CombineFile(child.Value));
-        public override void Create(FsChild<FsFolder> child) => CombineFolder(child.Value).Create();
-        public override void Remove(FsChild<FsFolder> child) => CombineFolder(child.Value).Remove();
-        public override void Remove(FsChild<FsFile> child) => CombineFile(child.Value).Remove();
+        public override void Copy(FsChild<FsFile> child) => child.Child.Copy(CombineFile(child.SubPath));
+        public override void Create(FsChild<FsFolder> child) => CombineFolder(child.SubPath).Create();
+        public override void Remove(FsChild<FsFolder> child) => CombineFolder(child.SubPath).Remove();
+        public override void Remove(FsChild<FsFile> child) => CombineFile(child.SubPath).Remove();
         
         public override void SyncStructure(FsFolder destination, bool force)
         {
@@ -136,17 +136,17 @@ namespace RoseByte.SharpFiles.Internal
 
             foreach (var subFolder in destFolders.Except(folders))
             {
-                destination.CombineFolder(subFolder.Value).Remove();
+                destination.CombineFolder(subFolder.SubPath).Remove();
             }
             
             foreach (var subFile in destination.Files.Except(Files))
             {
-                destination.CombineFile(subFile.Value).Remove();
+                destination.CombineFile(subFile.SubPath).Remove();
             }
 
             foreach (var folder in folders.Except(destFolders))
             {
-                destination.CombineFolder(folder.Value).Create();
+                destination.CombineFolder(folder.SubPath).Create();
             }
         }
         
@@ -162,7 +162,7 @@ namespace RoseByte.SharpFiles.Internal
                 file.Child.Remove();
             }
             
-            Directory.Delete(Value, true);
+            Directory.Delete(Path, true);
         }
         
         public override void Create()
@@ -182,7 +182,7 @@ namespace RoseByte.SharpFiles.Internal
                 Parent.Create();
             }
 
-            Directory.CreateDirectory(Value);
+            Directory.CreateDirectory(Path);
         }
     }
 }

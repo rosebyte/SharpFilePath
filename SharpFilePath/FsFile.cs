@@ -15,6 +15,7 @@ namespace RoseByte.SharpFiles
 	    public override bool IsFolder => false;
 	    public abstract byte[] Hash { get; }
 	    public abstract void Copy(FsFile target);
+	    public abstract void Copy(FsFile target, Action<int> progress);
 	    public abstract void Copy(FsFile target, Action<long, long> progress);
 	    public abstract Encoding Encoding { get; }
     }

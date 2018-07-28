@@ -14,20 +14,19 @@ namespace RoseByte.SharpFiles.Internal
 {
     public class File : FsFile
     {
-        public override string Name => Path.GetFileName(Value);
-        public override string NameWithoutExtension => Path.GetFileNameWithoutExtension(Value);
+        public override string Name => System.IO.Path.GetFileName(Path);
+        public override string NameWithoutExtension => System.IO.Path.GetFileNameWithoutExtension(Path);
 	    
         private string _content;
-        public override string Content => _content ?? (_content = System.IO.File.ReadAllText(Value));
+        public override string Content => _content ?? (_content = System.IO.File.ReadAllText(Path));
 
         private byte[] _hash;
         public override byte[] Hash
         {
-            get => _hash ?? (_hash = SHA256.Create().ComputeHash(System.IO.File.ReadAllBytes(Value)));
+            get => _hash ?? (_hash = SHA256.Create().ComputeHash(System.IO.File.ReadAllBytes(Path)));
         }
 
-        private long? _sizeCache;
-        protected override long GetSize() => new FileInfo(Value).Length;
+        protected override long GetSize() => new FileInfo(Path).Length;
         
         internal File(string value) : base(value) { }
 
@@ -35,9 +34,9 @@ namespace RoseByte.SharpFiles.Internal
         {
             target.Parent.Create();
             
-            if (target.Exists && (System.IO.File.GetAttributes(Value) & FileAttributes.ReadOnly) != 0)
+            if (target.Exists && (System.IO.File.GetAttributes(Path) & FileAttributes.ReadOnly) != 0)
             {
-                System.IO.File.SetAttributes(Value, FileAttributes.Normal);
+                System.IO.File.SetAttributes(Path, FileAttributes.Normal);
             };
         }
         
@@ -47,7 +46,7 @@ namespace RoseByte.SharpFiles.Internal
             {
                 // Read the BOM
                 var bom = new byte[4];
-                using (var file = new FileStream(Value, FileMode.Open, FileAccess.Read))
+                using (var file = new FileStream(Path, FileMode.Open, FileAccess.Read))
                 {
                     file.Read(bom, 0, 4);
                 }
@@ -69,11 +68,11 @@ namespace RoseByte.SharpFiles.Internal
             try
             {
                 PrepareCopy(target);
-                System.IO.File.Copy(Value, target, true);
+                System.IO.File.Copy(Path, target, true);
             }
             catch (Exception exception)
             {
-                throw new Exception($"File '{Value}' could not be copied to '{target}': {exception.Message}");
+                throw new Exception($"File '{Path}' could not be copied to '{target}': {exception.Message}");
             }
         }
 	    
@@ -81,6 +80,14 @@ namespace RoseByte.SharpFiles.Internal
         {
             PrepareCopy(target);
             new FileEx(progress).Copy(this, target);
+        }
+
+        public override void Copy(FsFile target, Action<int> progress)
+        {
+            void Adapter(long x, long y) => progress((int) (100 * y / Size));
+
+            PrepareCopy(target);
+            new FileEx(Adapter).Copy(this, target);
         }
 
         public override void Remove()
@@ -92,12 +99,12 @@ namespace RoseByte.SharpFiles.Internal
 			
             try
             {
-                if ((System.IO.File.GetAttributes(Value) & FileAttributes.ReadOnly) != 0)
+                if ((System.IO.File.GetAttributes(Path) & FileAttributes.ReadOnly) != 0)
                 {
-                    System.IO.File.SetAttributes(Value, FileAttributes.Normal);
+                    System.IO.File.SetAttributes(Path, FileAttributes.Normal);
                 };
                 
-                System.IO.File.Delete(Value);
+                System.IO.File.Delete(Path);
             }
             catch (Exception exception)
             {
@@ -107,7 +114,7 @@ namespace RoseByte.SharpFiles.Internal
 
                     try
                     {
-                        var processes = FileUtil.WhoIsLocking(Value);
+                        var processes = FileUtil.WhoIsLocking(Path);
                         handlers = processes.Select(x => $"{x.ProcessName} ({x.Id})");
                     }
                     catch (Exception e)
@@ -115,11 +122,11 @@ namespace RoseByte.SharpFiles.Internal
                         handlers = GetHandler().Select(x => $"{x.Value} ({x.Key})");
                     }
                     
-                    throw new Exception($"File '{Value}' is locked by: {string.Join(", ", handlers)}");
+                    throw new Exception($"File '{Path}' is locked by: {string.Join(", ", handlers)}");
                 }
                 
                 throw new Exception(
-                    $"File '{Value}' could not be deleted: {exception.Message}");
+                    $"File '{Path}' could not be deleted: {exception.Message}");
             }
         }
 
@@ -135,7 +142,7 @@ namespace RoseByte.SharpFiles.Internal
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     FileName = hndl,
-                    Arguments = Value + " /accepteula",
+                    Arguments = Path + " /accepteula",
                     CreateNoWindow = true
                 }
             };
@@ -159,14 +166,14 @@ namespace RoseByte.SharpFiles.Internal
             return result;
         }
 
-        public override FsFolder Parent => Path.GetDirectoryName(Value).ToFolder();
+        public override FsFolder Parent => System.IO.Path.GetDirectoryName(Path).ToFolder();
         
-        public override bool Exists => System.IO.File.Exists(Value);
+        public override bool Exists => System.IO.File.Exists(Path);
 
         public override void Write(string content)
         {
             PrepareCopy(this);
-            System.IO.File.WriteAllText(Value, content, Encoding.UTF8);
+            System.IO.File.WriteAllText(Path, content, Encoding.UTF8);
         }
     }
 }
