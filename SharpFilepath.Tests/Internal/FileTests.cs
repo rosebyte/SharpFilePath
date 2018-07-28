@@ -45,6 +45,8 @@ namespace RoseByte.SharpFiles.Tests
             sut.Write("A");
             
             Assert.That(sut.Encoding, Is.EqualTo(Encoding.UTF8));
+            File.WriteAllText(sut, "AV", Encoding.ASCII);
+            Assert.That(sut.Encoding, Is.EqualTo(Encoding.ASCII));
         }
         
         [Test]
@@ -53,6 +55,10 @@ namespace RoseByte.SharpFiles.Tests
             var sut = _folder.CombineFile(nameof(ShouldTestEncoding));
             sut.Write("A");
             Assert.That(sut.HasEncoding(Encoding.UTF8), Is.True);
+            Assert.That(sut.HasEncoding(Encoding.ASCII), Is.False);
+            File.WriteAllText(sut, "AV", Encoding.ASCII);
+            Assert.That(sut.HasEncoding(Encoding.ASCII), Is.True);
+            Assert.That(sut.HasEncoding(Encoding.UTF8), Is.False);
         }
         
         [Test]

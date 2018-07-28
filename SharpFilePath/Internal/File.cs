@@ -72,22 +72,38 @@ namespace RoseByte.SharpFiles.Internal
             }
             catch (Exception exception)
             {
+                InspectException(exception, false);
                 throw new Exception($"File '{Path}' could not be copied to '{target}': {exception.Message}");
             }
         }
 	    
         public override void Copy(FsFile target, Action<long, long> progress)
         {
-            PrepareCopy(target);
-            new FileEx(progress).Copy(this, target);
+            try
+            {
+                PrepareCopy(target);
+                new FileEx(progress).Copy(this, target);
+            }
+            catch (Exception exception)
+            {
+                InspectException(exception, true);
+                throw new Exception($"File '{Path}' could not be copied to '{target}': {exception.Message}");
+            }
         }
 
         public override void Copy(FsFile target, Action<int> progress)
         {
-            void Adapter(long x, long y) => progress((int) (100 * y / Size));
-
-            PrepareCopy(target);
-            new FileEx(Adapter).Copy(this, target);
+            try
+            {
+                void Adapter(long x, long y) => progress((int) (100 * y / Size));
+                PrepareCopy(target);
+                new FileEx(Adapter).Copy(this, target);
+            }
+            catch (Exception exception)
+            {
+                InspectException(exception, true);
+                throw new Exception($"File '{Path}' could not be copied to '{target}': {exception.Message}");
+            }
         }
 
         public override void Remove()
@@ -108,31 +124,42 @@ namespace RoseByte.SharpFiles.Internal
             }
             catch (Exception exception)
             {
-                if (exception.HResult == -2147024891)
-                {
-                    try
-                    {
-                        IEnumerable<string> handlers;
-                        try
-                        {
-                            handlers = FileUtil.WhoIsLocking(Path).Select(x => $"{x.ProcessName} ({x.Id})");
-                            
-                        }
-                        catch (Exception e)
-                        {
-                            handlers = GetHandler().Select(x => $"{x.Value} ({x.Key})");
-                        }
-                        
-                        throw new Exception($"File '{Path}' is locked by: {string.Join(", ", handlers)}");
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"File '{Path}' is locked by unknown processes: {ex.Message}");
-                    }
-                }
-                
+                InspectException(exception, false);
                 throw new Exception($"File '{Path}' could not be deleted: {exception.Message}");
             }
+        }
+
+        private void InspectException(Exception exception, bool inspectHandlers)
+        {
+            if (!inspectHandlers && exception.HResult != -2147024891)
+            {
+                return;
+            }
+            
+            var handlers = new List<string>();
+                
+            try
+            {
+                handlers.AddRange(FileUtil.WhoIsLocking(Path).Select(x => $"{x.ProcessName} ({x.Id})"));
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    handlers.AddRange(GetHandler().Select(x => $"{x.Value} ({x.Key})"));
+                }
+                catch
+                {
+                    return;
+                }
+            }
+
+            if (!handlers.Any())
+            {
+                return;
+            }
+                
+            throw new Exception($"File '{Path}' is locked by: {string.Join(", ", handlers)}");
         }
 
         private Dictionary<int, string> GetHandler(bool kill = false)
@@ -177,8 +204,16 @@ namespace RoseByte.SharpFiles.Internal
 
         public override void Write(string content)
         {
-            PrepareCopy(this);
-            System.IO.File.WriteAllText(Path, content, Encoding.UTF8);
+            try
+            {
+                PrepareCopy(this);
+                System.IO.File.WriteAllText(Path, content, Encoding.UTF8);
+            }
+            catch (Exception exception)
+            {
+                InspectException(exception, false);
+                throw new Exception($"Cannot write to '{Path}': {exception.Message}");
+            }
         }
     }
 }

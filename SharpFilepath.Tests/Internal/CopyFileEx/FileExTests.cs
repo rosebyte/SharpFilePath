@@ -14,19 +14,13 @@ namespace RoseByte.SharpFiles.Tests.CopyFileEx
         private static FsFolder AppFsFolder => 
             (FsFolder)Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName.ToPath();
 
-        private readonly FsFolder _folder = AppFsFolder.CombineFolder("CopyFileExTests");
+        private readonly FsFolder _folder = AppFsFolder.CombineFolder(nameof(FileExTests));
 
         [OneTimeSetUp]
-        public void Setup()
-        {
-            _folder.Create();
-        }
+        public void Setup() => _folder.Create();
         
         [OneTimeTearDown]
-        public void TearDown()
-        {
-            _folder.Remove();
-        }
+        public void TearDown() => _folder.Remove();
         
         [Test]
         public void ShouldCopySmallFile()
@@ -83,9 +77,7 @@ namespace RoseByte.SharpFiles.Tests.CopyFileEx
             var sut = AppFsFolder.CombineFile("TestFiles\\nuget.exe");
             var target = AppFsFolder.CombineFile("RoseByte.SharpFiles.Tests.dll");
             
-            Assert.That(
-                () => sut.Copy(target, (x, y) => { }), 
-                Throws.Exception.With.Message.EqualTo($"File '{sut}' could not be copied to '{target}'"));
+            Assert.That(() => sut.Copy(target, (x, y) => { }), Throws.Exception);
         }
     }
 }

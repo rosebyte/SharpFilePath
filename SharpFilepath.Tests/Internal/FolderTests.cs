@@ -145,12 +145,12 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldSkipFoldersEndingWithOne()
         {
             var rgx = new Regex(".*1$");
-            var sut = _folder.SetRecursivity(true).SetFolderSkip(rgx);
+            var sut = _folder.CombineFolder("SubFolder_1").SetRecursivity(true).SetFolderSkip(rgx);
 
             var result = sut.Folders;
             
             Assert.That(sut.FoldersSkip, Is.EqualTo(rgx));
-            Assert.That(result.Count(), Is.EqualTo(2));
+            Assert.That(result.Count(), Is.EqualTo(1));
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldSumSIzeOfFolder()
         {
-            Assert.That(_folder.CombineFolder("SubFolder_1").Size, Is.EqualTo(12));
+            Assert.That(_folder.CombineFolder("SubFolder_1").Size, Is.EqualTo(64));
         }
 
         [Test]
