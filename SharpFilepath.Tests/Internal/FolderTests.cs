@@ -31,12 +31,17 @@ namespace RoseByte.SharpFiles.Tests
             subfolder1.CombineFile("Test_1_1.txt").Write("1_1");
             subfolder1.CombineFile("Test_1_2.txt").Write("1_2");
             
-            var subfolder11 = _folder.CombineFolder("SubFolder_1_1");
+            var subfolder11 = subfolder1.CombineFolder("SubFolder_1_1");
             subfolder11.Create();
             subfolder11.CombineFile("Test_1_1_1.txt").Write("1_1_1");
             subfolder11.CombineFile("Test_1_1_2.txt").Write("1_1_2");
             
-            var subfolder12 = _folder.CombineFolder("SubFolder_1_2");
+            var subfolder111 = subfolder11.CombineFolder("SubFolder_1_1_1");
+            subfolder111.Create();
+            subfolder111.CombineFile("Test_1_1_1_1.txt").Write("1_1_1_1");
+            subfolder111.CombineFile("Test_1_1_1_2.txt").Write("1_1_1_2");
+            
+            var subfolder12 = subfolder1.CombineFolder("SubFolder_1_2");
             subfolder12.Create();
             subfolder12.CombineFile("Test_1_2_1.txt").Write("1_2_1");
             subfolder12.CombineFile("Test_1_2_2.txt").Write("1_2_2");
@@ -46,12 +51,12 @@ namespace RoseByte.SharpFiles.Tests
             subfolder2.CombineFile("Test_2_1.txt").Write("2_1");
             subfolder2.CombineFile("Test_2_2.txt").Write("2_2");
             
-            var subfolder21 = _folder.CombineFolder("SubFolder_2_1");
+            var subfolder21 = subfolder2.CombineFolder("SubFolder_2_1");
             subfolder21.Create();
             subfolder21.CombineFile("Test_2_1_1.txt").Write("2_1_1");
             subfolder21.CombineFile("Test_2_1_2.txt").Write("2_1_2");
             
-            var subfolder22 = _folder.CombineFolder("SubFolder_2_2");
+            var subfolder22 = subfolder2.CombineFolder("SubFolder_2_2");
             subfolder22.Create();
             subfolder22.CombineFile("Test_2_2_1.txt").Write("2_2_1");
             subfolder22.CombineFile("Test_2_2_2.txt").Write("2_2_2");
@@ -92,7 +97,9 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldReturnFirstLevelFolders()
         {
-            var sut = _folder.SetRecursivity(false);
+            var sut = _folder.CombineFolder("SubFolder_1").SetRecursivity(false);
+
+            var result = sut.Folders.ToList();
             
             Assert.That(sut.Recursive, Is.False);
             Assert.That(sut.Folders.Count(), Is.EqualTo(2));
@@ -106,8 +113,8 @@ namespace RoseByte.SharpFiles.Tests
 
             var result = sut.Files;
             
-            Assert.That(sut.FilesFilter, Is.EqualTo(result));
-            Assert.That(result.Count(), Is.EqualTo(7));
+            Assert.That(sut.FilesFilter, Is.EqualTo(rgx));
+            Assert.That(result.Count(), Is.EqualTo(8));
         }
         
         [Test]
@@ -118,7 +125,7 @@ namespace RoseByte.SharpFiles.Tests
 
             var result = sut.Folders;
             
-            Assert.That(sut.FoldersFilter, Is.EqualTo(result));
+            Assert.That(sut.FoldersFilter, Is.EqualTo(rgx));
             Assert.That(result.Count(), Is.EqualTo(3));
         }
         
@@ -130,8 +137,8 @@ namespace RoseByte.SharpFiles.Tests
 
             var result = sut.Files;
             
-            Assert.That(sut.FilesSkip, Is.EqualTo(result));
-            Assert.That(result.Count(), Is.EqualTo(7));
+            Assert.That(sut.FilesSkip, Is.EqualTo(rgx));
+            Assert.That(result.Count(), Is.EqualTo(8));
         }
         
         [Test]
@@ -142,8 +149,8 @@ namespace RoseByte.SharpFiles.Tests
 
             var result = sut.Folders;
             
-            Assert.That(sut.FoldersSkip, Is.EqualTo(result));
-            Assert.That(result.Count(), Is.EqualTo(7));
+            Assert.That(sut.FoldersSkip, Is.EqualTo(rgx));
+            Assert.That(result.Count(), Is.EqualTo(2));
         }
 
         [Test]

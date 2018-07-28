@@ -110,23 +110,28 @@ namespace RoseByte.SharpFiles.Internal
             {
                 if (exception.HResult == -2147024891)
                 {
-                    IEnumerable<string> handlers = null;
-
                     try
                     {
-                        var processes = FileUtil.WhoIsLocking(Path);
-                        handlers = processes.Select(x => $"{x.ProcessName} ({x.Id})");
+                        IEnumerable<string> handlers;
+                        try
+                        {
+                            handlers = FileUtil.WhoIsLocking(Path).Select(x => $"{x.ProcessName} ({x.Id})");
+                            
+                        }
+                        catch (Exception e)
+                        {
+                            handlers = GetHandler().Select(x => $"{x.Value} ({x.Key})");
+                        }
+                        
+                        throw new Exception($"File '{Path}' is locked by: {string.Join(", ", handlers)}");
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        handlers = GetHandler().Select(x => $"{x.Value} ({x.Key})");
+                        throw new Exception($"File '{Path}' is locked by unknown processes: {ex.Message}");
                     }
-                    
-                    throw new Exception($"File '{Path}' is locked by: {string.Join(", ", handlers)}");
                 }
                 
-                throw new Exception(
-                    $"File '{Path}' could not be deleted: {exception.Message}");
+                throw new Exception($"File '{Path}' could not be deleted: {exception.Message}");
             }
         }
 
