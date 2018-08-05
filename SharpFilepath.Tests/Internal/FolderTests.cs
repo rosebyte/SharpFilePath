@@ -66,6 +66,14 @@ namespace RoseByte.SharpFiles.Tests
         public void TearDown() => _folder.Remove();
 
         [Test]
+        public void ShouldCompareToNull()
+        {
+            FsFolder sut = null;
+            
+            Assert.That(sut == null, Is.True);
+        }
+        
+        [Test]
         public void ShouldReturnAllFiles()
         {
             var sut = _folder;
@@ -186,7 +194,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldCombineFile()
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-            var sut = Path.Combine(dir).ToPath();
+            var sut = System.IO.Path.Combine(dir).ToPath();
             var parent = sut.Parent;
             var name = sut.ToString().Split('\\').Last();
             
@@ -197,7 +205,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldCombineFolder()
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
-            var sut = Path.Combine(dir).ToPath();
+            var sut = System.IO.Path.Combine(dir).ToPath();
             var parent = sut.Parent;
             var name = sut.ToString().Split('\\').Last();
             
@@ -209,7 +217,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var dir = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
             var parentDir = Directory.GetParent(dir).FullName;
-            var sut = Path.Combine(dir).ToPath();
+            var sut = System.IO.Path.Combine(dir).ToPath();
             var parent = sut.Parent;
             
             Assert.That(parent.ToString(), Is.EqualTo(parentDir));
@@ -220,9 +228,9 @@ namespace RoseByte.SharpFiles.Tests
         {
             AppFsFolder.CombineFolder("FolderCreationTest\\Subfolder\\OneMoreSubfolder").Create();
 
-            var firstFolder = Path.Combine(AppFsFolder, "FolderCreationTest");
-            var secondFolder = Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder");
-            var thirdFolder =Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder\\OneMoreSubfolder");
+            var firstFolder = System.IO.Path.Combine(AppFsFolder, "FolderCreationTest");
+            var secondFolder = System.IO.Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder");
+            var thirdFolder = System.IO.Path.Combine(AppFsFolder, "FolderCreationTest\\Subfolder\\OneMoreSubfolder");
             
             Assert.That(Directory.Exists(firstFolder), Is.True);
             Assert.That(Directory.Exists(secondFolder), Is.True);
@@ -248,7 +256,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var value = "SubFolder_1\\Test_1_1.txt";
             var parent = _folder.CombineFolder(nameof(ShouldCopySubfile));
-            var subFile = new FsChild<FsFile>(_folder, _folder.CombineFile(value));
+            var subFile = new Child<FsFile>(_folder, _folder.CombineFile(value));
             
             Assert.That(parent.CombineFile(value).Exists, Is.False);
             parent.Copy(subFile);
@@ -260,7 +268,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldRemoveSubfolder()
         {
             var value = nameof(ShouldRemoveSubfolder);
-            var subFile = new FsChild<FsFolder>(_folder, _folder.CombineFolder(value));
+            var subFile = new Child<FsFolder>(_folder, _folder.CombineFolder(value));
             
             _folder.Create(subFile);
             Assert.That(_folder.CombineFolder(value).Exists, Is.True);
@@ -272,7 +280,7 @@ namespace RoseByte.SharpFiles.Tests
         public void ShouldRemoveSubfile()
         {
             var value = $"{nameof(ShouldRemoveSubfile)}\\{nameof(ShouldRemoveSubfile)}";
-            var subFile = new FsChild<FsFile>(_folder, _folder.CombineFile(value));
+            var subFile = new Child<FsFile>(_folder, _folder.CombineFile(value));
             subFile.Child.Write("A");
             Assert.That(_folder.CombineFile(value).Exists, Is.True);
             _folder.Remove(subFile);
@@ -284,7 +292,7 @@ namespace RoseByte.SharpFiles.Tests
         {
             var value = nameof(ShouldCreateSubFolder);
             Assert.That(_folder.CombineFolder(value).Exists, Is.False);
-            var subFile = new FsChild<FsFolder>(_folder, _folder.CombineFolder(value));
+            var subFile = new Child<FsFolder>(_folder, _folder.CombineFolder(value));
             _folder.Create(subFile);
             Assert.That(_folder.CombineFolder(subFile.SubPath).Exists, Is.True);
             _folder.CombineFolder(nameof(ShouldCreateSubFolder)).Remove();

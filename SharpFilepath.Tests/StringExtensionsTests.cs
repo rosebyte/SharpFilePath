@@ -1,8 +1,8 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using RoseByte.SharpFiles.Extensions;
+using RoseByte.SharpFiles.Internal;
 
 namespace RoseByte.SharpFiles.Tests
 {
@@ -38,26 +38,34 @@ namespace RoseByte.SharpFiles.Tests
         {
             Assert.That("C:\\Windows".ToPath(), Is.AssignableTo<FsFolder>());
         }
+
+        [Test]
+        public void ShouldReturnPathIfPathDoesNotExist()
+        {
+            var sut = "C:\\test.txt".ToPath();
+            
+            Assert.That(sut, Is.TypeOf<Path>());
+        }
         
         [Test]
         public void ShouldReturnFilePath()
         {
-            var filePath = Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
+            var filePath = System.IO.Path.GetFullPath(Assembly.GetExecutingAssembly().Location);
             Assert.That(filePath.ToPath(), Is.AssignableTo<FsFile>());
         }
         
         [Test]
         public void ShouldResolveRelativeFolder()
         {
-            var folderName = Path.GetFullPath(".").Split('\\').Last();
-            Assert.That($"..\\.\\{folderName}".ToFolder(), Is.EqualTo(Path.GetFullPath(".").ToFolder()));
+            var folderName = System.IO.Path.GetFullPath(".").Split('\\').Last();
+            Assert.That($"..\\.\\{folderName}".ToFolder(), Is.EqualTo(System.IO.Path.GetFullPath(".").ToFolder()));
         }
         
         [Test]
         public void ShouldResolveRelativeFile()
         {
-            var fileName = Path.GetFileName(Assembly.GetCallingAssembly().Location);
-            var fullName = $"{Path.GetFullPath(".")}\\{fileName}";
+            var fileName = System.IO.Path.GetFileName(Assembly.GetCallingAssembly().Location);
+            var fullName = $"{System.IO.Path.GetFullPath(".")}\\{fileName}";
             
             Assert.That($".\\{fileName}".ToFile(), Is.EqualTo(fullName.ToFile()));
         }
@@ -65,8 +73,8 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldResolveFilePath()
         {
-            var fileName = Path.GetFileName(Assembly.GetCallingAssembly().Location);
-            var fullName = $"{Path.GetFullPath(".")}\\{fileName}";
+            var fileName = System.IO.Path.GetFileName(Assembly.GetCallingAssembly().Location);
+            var fullName = $"{System.IO.Path.GetFullPath(".")}\\{fileName}";
             
             Assert.That($".\\{fileName}".ToPath(), Is.EqualTo(fullName.ToFile()));
         }
@@ -74,9 +82,9 @@ namespace RoseByte.SharpFiles.Tests
         [Test]
         public void ShouldResolveParentPath()
         {
-            var fileName = Path.GetFileName(Assembly.GetCallingAssembly().Location);
-            var folderName = Path.GetFullPath(".").Split('\\').Last();
-            var fullName = $"{Path.GetFullPath(".")}\\{fileName}";
+            var fileName = System.IO.Path.GetFileName(Assembly.GetCallingAssembly().Location);
+            var folderName = System.IO.Path.GetFullPath(".").Split('\\').Last();
+            var fullName = $"{System.IO.Path.GetFullPath(".")}\\{fileName}";
             
             Assert.That($"..\\{folderName}\\{fileName}".ToPath(), Is.EqualTo(fullName.ToFile()));
         }

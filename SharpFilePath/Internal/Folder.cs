@@ -77,7 +77,7 @@ namespace RoseByte.SharpFiles.Internal
 
                 foreach (var file in files)
                 {
-                    var subpath = new FsChild<FsFile>(this, new File(file));
+                    var subpath = new Child<FsFile>(this, new File(file));
                     
                     if (!FilesFilter?.IsMatch(subpath.SubPath) ?? false)
                     {
@@ -100,7 +100,7 @@ namespace RoseByte.SharpFiles.Internal
             
             foreach (var file in files)
             {
-                var subpath = new FsChild<FsFolder>(this, new Folder(file));
+                var subpath = new Child<FsFolder>(this, new Folder(file));
                 
                 if (!FoldersFilter?.IsMatch(subpath.SubPath) ?? false)
                 {

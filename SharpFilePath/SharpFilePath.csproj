@@ -42,6 +42,7 @@
     <Compile Include="FsFile.cs" />
     <Compile Include="FsPath.cs" />
     <Compile Include="FsFolder.cs" />
+    <Compile Include="Internal\Child.cs" />
     <Compile Include="Internal\CopyFileEx\CopyFileFlags.cs" />
     <Compile Include="Internal\CopyFileEx\CopyProgressCallbackReason.cs" />
     <Compile Include="Internal\CopyFileEx\CopyProgressResult.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Internal\Handle\RM_APP_TYPE.cs" />
     <Compile Include="Internal\Handle\RM_PROCESS_INFO.cs" />
     <Compile Include="Internal\Handle\RM_UNIQUE_PROCESS.cs" />
+    <Compile Include="Internal\Path.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

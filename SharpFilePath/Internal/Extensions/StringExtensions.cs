@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using RoseByte.SharpFiles.Internal;
+﻿using RoseByte.SharpFiles.Internal;
 using File = RoseByte.SharpFiles.Internal.File;
 
 namespace RoseByte.SharpFiles.Extensions
@@ -14,9 +12,9 @@ namespace RoseByte.SharpFiles.Extensions
                 return null;
             }
             
-            path = Path.GetFullPath(path);
+            path = System.IO.Path.GetFullPath(path);
 			
-            if (Directory.Exists(path))
+            if (System.IO.Directory.Exists(path))
             {
                 return new Folder(path);
             }
@@ -26,7 +24,7 @@ namespace RoseByte.SharpFiles.Extensions
                 return new File(path);
             }
 			
-            throw new Exception($"Unknown path: {path}");
+            return new Path(path);
         }
 
         public static FsFile ToFile(this string path)
@@ -36,7 +34,7 @@ namespace RoseByte.SharpFiles.Extensions
                 return null;
             }
             
-            path = Path.GetFullPath(path);
+            path = System.IO.Path.GetFullPath(path);
             
             return new File(path);
         }
@@ -48,7 +46,7 @@ namespace RoseByte.SharpFiles.Extensions
                 return null;
             }
             
-            path = Path.GetFullPath(path);
+            path = System.IO.Path.GetFullPath(path);
             
             return new Folder(path);
         }

@@ -9,7 +9,7 @@
         public FsFolder Parent { get; }
         public T Child { get; }
         
-        internal FsChild(FsFolder parent, T child)
+        protected FsChild(FsFolder parent, T child)
         {
             Parent = parent;
             Child = child;
