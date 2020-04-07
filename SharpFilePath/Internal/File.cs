@@ -34,9 +34,9 @@ namespace RoseByte.SharpFiles.Internal
         {
             target.Parent.Create();
             
-            if (target.Exists && (System.IO.File.GetAttributes(Path) & FileAttributes.ReadOnly) != 0)
+            if (target.Exists && (System.IO.File.GetAttributes(target) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
             {
-                System.IO.File.SetAttributes(Path, FileAttributes.Normal);
+                System.IO.File.SetAttributes(target, FileAttributes.Normal);
             };
         }
         
