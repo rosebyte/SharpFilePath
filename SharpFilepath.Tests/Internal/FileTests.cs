@@ -266,7 +266,7 @@ namespace RoseByte.SharpFiles.Tests
             Assert.That(
                 () => target.Remove(), 
                 Throws.Exception.With.Message.Contains(
-                    $"is locked by: JetBrains.ReSharper.TaskRunner.CLR45.x64 "));
+                    $"is locked by: "));
         }
         
         [Test]
